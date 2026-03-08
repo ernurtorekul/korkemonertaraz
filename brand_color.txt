@@ -1,0 +1,27 @@
+Primary	Trust Blue	#2B4592	Headers, footer, primary buttons, and main headings.
+Primary	Vibrant Gold	#FFD740	Accents, borders, highlight boxes, and hover states.
+Background	Sky Tint	#F0F9FF	Page backgrounds or section dividers to keep it airy.
+
+Secondary & Accent Palette
+Since it’s an art school, you can use these "palette colors" for specific categories, icons, or Call-to-Action (CTA) buttons.
+
+Creative Red (#E53935): Perfect for "Enroll Now" or urgent alerts.
+
+Artistic Green (#4CAF50): Use for success messages or nature-themed art sections.
+
+Deep Purple (#7B1FA2): Great for "Gallery" or "Exhibition" links.
+
+Cyan Blue (#00BCD4): Useful for secondary links or info cards.
+
+
+Web Design Strategy
+1. Typography & Hierarchy
+Use the Trust Blue (#2B4592) for your body text and headings. It is much easier on the eyes than pure black and maintains the brand's connection to the logo. Use the Gold sparingly for underlines or small "New" badges to avoid overwhelming the user.
+
+2. The "Artistic" Background
+Avoid a stark white background. Instead, use a very faint gradient or a solid fill of the Sky Tint (#F0F9FF). This mimics the soft center of the logo and makes the colorful art elements "pop" more effectively.
+
+3. Navigation & Buttons
+Navbar: A white background with Trust Blue text and a thin Gold bottom border looks very clean.
+
+Main CTA: Use a Vibrant Gold button with Trust Blue text. It creates a high-contrast, "click-me" look that feels friendly.
