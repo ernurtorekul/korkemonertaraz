@@ -18,7 +18,9 @@ export default function Footer() {
                 />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-vibrantGold">Көркемөнер мектебі</h3>
+                <h3 className="text-lg font-bold text-vibrantGold">
+                  Көркемөнер мектебі
+                </h3>
                 <p className="text-xs text-blue-200">Тараз қаласы</p>
               </div>
             </div>
@@ -163,12 +165,11 @@ export default function Footer() {
                     d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                   />
                 </svg>
-                {/* <a href="mailto:korkemonertaraz@mail.kz" className="text-blue-100 hover:text-white transition-colors text-xs break-all">korkemonertaraz@mail.kz</a> */}
                 <a
-                  href="mailto:ernurtorekul@gmail.com"
-                  className="text-blue-100 hover:text-white transition-colors text-xs break-all"
+                  href="mailto:korkemonertaraz@mail.kz"
+                  className="text-blue-100 hover:text-white transition-colors text-sm break-all"
                 >
-                  ernurtorekul@gmail.com
+                  korkemonertaraz@mail.kz
                 </a>
               </li>
               <li className="flex items-center space-x-2">

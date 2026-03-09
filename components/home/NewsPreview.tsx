@@ -50,7 +50,8 @@ const categoryToSlug: Record<string, string> = {
 };
 
 export default async function NewsPreview() {
-  const articles = await getLatestNews(3);
+  // Exclude events from latest news preview (they have their own section)
+  const articles = await getLatestNews(3, ['Іс-шаралар']);
 
   const getCategorySlug = (category: string) => {
     return categoryToSlug[category] || category.toLowerCase().replace(/\s+/g, '-');
@@ -66,7 +67,7 @@ export default async function NewsPreview() {
             <div className="w-16 h-1 bg-vibrantGold rounded-full"></div>
           </div>
           <Link
-            href="/"
+            href="/news"
             className="inline-flex items-center space-x-2 text-trustBlue hover:text-vibrantGold font-semibold transition-colors group"
           >
             <span>Барлығын көру</span>

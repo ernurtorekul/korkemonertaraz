@@ -112,13 +112,19 @@ export async function getArticlesByCategory(category: string): Promise<Article[]
 }
 
 // Get latest news (for homepage preview)
-export async function getLatestNews(limit: number = 3): Promise<Article[]> {
-  const { data: articles } = await supabaseAdmin
+export async function getLatestNews(limit: number = 3, excludeCategories: string[] = []): Promise<Article[]> {
+  let query = supabaseAdmin
     .from('articles')
     .select('*')
     .eq('published', true)
-    .order('created_at', { ascending: false })
-    .limit(limit);
+    .order('created_at', { ascending: false });
+
+  // Exclude specified categories
+  for (const category of excludeCategories) {
+    query = query.neq('category', category);
+  }
+
+  const { data: articles } = await query.limit(limit);
 
   if (!articles) return [];
 
