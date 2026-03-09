@@ -2,6 +2,7 @@ import HeroSection from "@/components/home/HeroSection";
 import StatsSection from "@/components/home/StatsSection";
 import FAQSection from "@/components/home/FAQSection";
 import NewsPreview from "@/components/home/NewsPreview";
+import UpcomingEvents from "@/components/home/UpcomingEvents";
 
 export default function HomePage() {
   return (
@@ -10,6 +11,7 @@ export default function HomePage() {
       <StatsSection />
       <FAQSection />
       <NewsPreview />
+      <UpcomingEvents />
     </div>
   );
 }

@@ -38,6 +38,7 @@ export default function EditArticlePage() {
   const [published, setPublished] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [eventDate, setEventDate] = useState('');
 
   useEffect(() => {
     async function fetchArticle() {
@@ -55,6 +56,7 @@ export default function EditArticlePage() {
           setCategory(article.category);
           setBlocks(article.blocks);
           setPublished(article.published);
+          setEventDate(article.event_date || '');
         } else {
           alert('Failed to fetch article');
           router.push('/admin/dashboard');
@@ -121,6 +123,7 @@ export default function EditArticlePage() {
           category,
           blocks,
           published,
+          event_date: category === 'Іс-шаралар' ? eventDate : null,
         }),
       });
 
@@ -223,6 +226,24 @@ export default function EditArticlePage() {
               </select>
             </div>
           </div>
+
+          {/* Event Date - Only show for Events category */}
+          {category === 'Іс-шаралар' && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Іс-шараның күні мен уақыты
+              </label>
+              <input
+                type="datetime-local"
+                value={eventDate}
+                onChange={(e) => setEventDate(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-vibrantGold text-gray-900"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Іс-шара күні мен уақыты енгізіңіз (мысалы: 15.03.2026 14:30)
+              </p>
+            </div>
+          )}
 
           <label className="flex items-center gap-2">
             <input

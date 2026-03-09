@@ -14,6 +14,7 @@ export async function createArticle(input: CreateArticleInput): Promise<Article>
       category: input.category,
       title: input.title,
       published: input.published ?? false,
+      event_date: input.event_date,
     })
     .select()
     .single();
@@ -149,6 +150,7 @@ export async function updateArticle(input: UpdateArticleInput): Promise<Article 
   if (updates.category !== undefined) updateData.category = updates.category;
   if (updates.title !== undefined) updateData.title = updates.title;
   if (updates.published !== undefined) updateData.published = updates.published;
+  if (updates.event_date !== undefined) updateData.event_date = updates.event_date;
 
   if (Object.keys(updateData).length > 0) {
     const { error: updateError } = await supabaseAdmin

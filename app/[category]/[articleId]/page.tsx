@@ -48,7 +48,7 @@ export default async function ArticlePage({ params }: PageProps) {
             <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            Арттқа қайту
+            Артқа қайту
           </Link>
 
           <div className="bg-white rounded-xl shadow-sm p-8 md:p-12">

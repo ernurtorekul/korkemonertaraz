@@ -27,6 +27,27 @@ function formatDate(dateString: string | null | undefined): string {
   }
 }
 
+// Format event date with time (e.g., "15 Наурыз 2026, 14:30")
+function formatEventDate(dateString: string | null | undefined): string {
+  if (!dateString) return '';
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '';
+
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    };
+
+    return date.toLocaleDateString('kk-KZ', options);
+  } catch {
+    return '';
+  }
+}
+
 // Get the first image URL from blocks, or return null
 const getFirstImageUrl = (blocks: any[] | undefined): string | null => {
   if (!blocks) return null;
@@ -78,7 +99,27 @@ async function getArticlesByCategory(categorySlug: string): Promise<{ articles: 
   }
 
   // Use the getArticles function with category and published filters
-  const articles = await getArticles({ category: categoryName, published: true });
+  let articles = await getArticles({ category: categoryName, published: true });
+
+  // For events, sort by event_date instead of created_at
+  // Show future events first, then past events
+  if (categoryName === 'Іс-шаралар') {
+    const now = new Date();
+    articles = articles.sort((a, b) => {
+      const dateA = a.event_date ? new Date(a.event_date) : new Date(a.created_at);
+      const dateB = b.event_date ? new Date(b.event_date) : new Date(b.created_at);
+
+      // Future events come first, sorted by date
+      const aIsFuture = dateA >= now;
+      const bIsFuture = dateB >= now;
+
+      if (aIsFuture && !bIsFuture) return -1;
+      if (!aIsFuture && bIsFuture) return 1;
+
+      // Both are future or both are past, sort by date
+      return dateA.getTime() - dateB.getTime();
+    });
+  }
 
   return { articles, categoryName };
 }
@@ -110,6 +151,7 @@ export default async function CategoryPage({ params }: PageProps) {
   if (articles.length === 1) {
     const article = articles[0];
     const categorySlug = category.toLowerCase().replace(/\s+/g, '-');
+    const isEvent = categoryName === 'Іс-шаралар';
 
     return (
       <div className="min-h-screen bg-skyTint py-12">
@@ -122,19 +164,32 @@ export default async function CategoryPage({ params }: PageProps) {
               <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-              Арттқа қайту
+              Артқа қайту
             </Link>
 
             <div className="bg-white rounded-xl shadow-sm p-8 md:p-12">
               <div className="text-sm text-trustBlue font-semibold mb-2">
                 {article.category}
               </div>
-              <div className="text-sm text-gray-500 mb-6 flex items-center">
-                <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                {formatDate(article.created_at)}
-              </div>
+
+              {/* Show event date prominently for events */}
+              {isEvent && article.event_date ? (
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="flex items-center text-gray-500">
+                    <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="font-medium">{formatEventDate(article.event_date)}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-sm text-gray-500 mb-6 flex items-center">
+                  <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  {formatDate(article.created_at)}
+                </div>
+              )}
 
               {article.blocks?.map((block) => {
                 switch (block.type) {
@@ -172,6 +227,26 @@ export default async function CategoryPage({ params }: PageProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {articles.map((article) => {
             const imageUrl = getFirstImageUrl(article.blocks);
+            const isEvent = categoryName === 'Іс-шаралар';
+
+            // For events, get calendar-style date info
+            const getEventDayInfo = (dateString: string | null | undefined) => {
+              if (!dateString) return null;
+              try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return null;
+                return {
+                  day: date.getDate().toString(),
+                  month: date.toLocaleDateString('kk-KZ', { month: 'long' }),
+                  dayName: date.toLocaleDateString('kk-KZ', { weekday: 'long' }),
+                };
+              } catch {
+                return null;
+              }
+            };
+
+            const eventInfo = isEvent ? getEventDayInfo(article.event_date) : null;
+
             return (
               <Link
                 key={article.id}
@@ -201,11 +276,22 @@ export default async function CategoryPage({ params }: PageProps) {
                       <div className="absolute inset-0 bg-gradient-to-t from-trustBlue/60 to-transparent"></div>
                     </>
                   )}
-                  <div className="absolute bottom-3 left-3">
-                    <span className="inline-block bg-vibrantGold text-trustBlue text-xs font-bold px-3 py-1 rounded-full">
-                      {formatDate(article.created_at)}
-                    </span>
-                  </div>
+
+                  {/* Date Badge - different style for events */}
+                  {isEvent && eventInfo ? (
+                    <div className="absolute top-3 right-3">
+                      <div className="bg-vibrantGold text-trustBlue rounded-lg p-2 text-center shadow-lg min-w-[60px]">
+                        <div className="text-xs font-medium opacity-90 leading-tight">{eventInfo.month}</div>
+                        <div className="text-xl font-bold leading-none">{eventInfo.day}</div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="absolute bottom-3 left-3">
+                      <span className="inline-block bg-vibrantGold text-trustBlue text-xs font-bold px-3 py-1 rounded-full">
+                        {formatDate(article.created_at)}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Card Content */}
@@ -213,6 +299,16 @@ export default async function CategoryPage({ params }: PageProps) {
                   <h3 className="text-lg font-bold text-trustBlue mb-3 line-clamp-2 group-hover:text-vibrantGold transition-colors">
                     {article.title}
                   </h3>
+
+                  {/* Event date/time display */}
+                  {isEvent && article.event_date && (
+                    <div className="flex items-center text-sm text-gray-500 mb-3">
+                      <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <time className="truncate">{formatEventDate(article.event_date)}</time>
+                    </div>
+                  )}
 
                   {article.blocks && article.blocks.length > 0 && article.blocks[0].type === 'text' && (
                     <p className="text-gray-600 text-sm line-clamp-3 leading-relaxed flex-1">
@@ -238,36 +334,7 @@ export default async function CategoryPage({ params }: PageProps) {
 }
 
 export async function generateStaticParams() {
-  const { getCategories } = await import('@/lib/supabase/articles');
-  const categories = await getCategories();
-
-  // Return both English slugs and Kazakh slugs for backward compatibility
-  const slugs = categories.map(category => {
-    const kazakhSlug = category.toLowerCase().replace(/\s+/g, '-');
-    // Map Kazakh category names to English slugs
-    const englishSlugMap: Record<string, string> = {
-      'әкімшілік': 'administration',
-      'антнотация': 'annotation',
-      'оқу-әдістемелік-жұмыстар': 'teaching-materials',
-      'тәрбие-жұмысы': 'educational-work',
-      'біздің-түлектер': 'graduates',
-      'ата-аналарға': 'parents',
-      'жетістіктер': 'achievements',
-      'нормативтік-құжаттар': 'documents',
-      'сабақ-кестесі': 'schedule',
-      'оқушылар-жетістігі': 'student-achievements',
-      'іс-шаралар': 'events',
-      'жемқорлыққа-қарсы-күрес': 'anti-corruption',
-      'қамқоршылық-кеңес': 'trustee-council',
-      'мемлекеттік-қызмет': 'public-services',
-    };
-
-    return {
-      category: englishSlugMap[kazakhSlug] || kazakhSlug,
-    };
-  });
-
-  // Also include common English routes directly
+  // Return all category slugs for static generation
   return [
     { category: 'administration' },
     { category: 'annotation' },
