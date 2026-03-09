@@ -12,10 +12,10 @@ export async function uploadFile(
 ): Promise<string> {
   let buffer: Buffer;
 
-  if (file instanceof Buffer) {
+  if (Buffer.isBuffer(file)) {
     buffer = file;
   } else {
-    const arrayBuffer = await file.arrayBuffer();
+    const arrayBuffer = await (file as File).arrayBuffer();
     buffer = Buffer.from(arrayBuffer);
   }
 
@@ -125,7 +125,7 @@ export async function deleteFile(url: string): Promise<void> {
 
     const { error } = await supabaseAdmin.storage
       .from(STORAGE_BUCKET)
-      .remove(path);
+      .remove([path]);
 
     if (error && error.message !== 'The resource was not found') {
       console.error('Error deleting file:', error);

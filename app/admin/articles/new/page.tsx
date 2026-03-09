@@ -25,7 +25,7 @@ const CATEGORIES = [
   'Мемлекеттік қызмет',
 ];
 
-type NewBlock = Omit<Block, 'id' | 'order'>;
+type NewBlock = Omit<Block, 'id' | 'article_id' | 'order_num'>;
 
 export default function NewArticlePage() {
   const router = useRouter();

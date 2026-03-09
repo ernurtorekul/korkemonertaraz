@@ -188,11 +188,26 @@ export async function updateArticle(input: UpdateArticleInput): Promise<Article 
 
 // Delete an article
 export async function deleteArticle(id: string): Promise<boolean> {
-  // Delete blocks (cascade should handle this, but let's be explicit)
-  await supabaseAdmin
+  // First check if article exists
+  const { data: article } = await supabaseAdmin
+    .from('articles')
+    .select('id')
+    .eq('id', id)
+    .single();
+
+  if (!article) {
+    return false;
+  }
+
+  // Delete blocks first (cascade should handle this, but let's be explicit)
+  const { error: blocksError } = await supabaseAdmin
     .from('blocks')
     .delete()
     .eq('article_id', id);
+
+  if (blocksError) {
+    console.error('Error deleting blocks:', blocksError);
+  }
 
   // Delete article
   const { error } = await supabaseAdmin
@@ -200,7 +215,10 @@ export async function deleteArticle(id: string): Promise<boolean> {
     .delete()
     .eq('id', id);
 
-  if (error) throw error;
+  if (error) {
+    console.error('Error deleting article:', error);
+    throw error;
+  }
 
   return true;
 }

@@ -1,32 +1,86 @@
+import Image from 'next/image';
+import Link from 'next/link';
+
 export default function HeroSection() {
   return (
-    <section className="relative bg-gradient-to-r from-blue-900 to-blue-700 text-white py-20">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Тараз қаласы балалар көркемөнер мектебі
-            </h1>
-            <p className="text-lg text-blue-100 mb-8">
-              Бұл Тараз қаласының білім беру мекемесі, онда балаларға бейнелеу өнеріне үйретеді,
-              олардың шығармашылық қабілеттерін дамытып, кәсіби педагогтардың жетекшілігімен
-              көркемдік мәдениеттің негіздерімен таныстырады.
-            </p>
-            <a
-              href="/байланыс"
-              className="inline-block bg-white text-blue-900 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
-            >
-              Бізбен байланысыңыз
-            </a>
+    <section className="relative min-h-[550px] md:min-h-[600px] overflow-visible">
+      {/* Background Image with Overlay */}
+      <div className="absolute inset-0 -z-10">
+        <Image
+          src="/main_pic.jpg"
+          alt="Көркемөнер мектебі"
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-trustBlue/95 via-trustBlue/80 to-trustBlue/40"></div>
+      </div>
+
+      <div className="section-container min-h-[550px] md:min-h-[600px] flex items-center py-16">
+        <div className="max-w-3xl">
+          {/* Badge */}
+          <div className="inline-flex items-center space-x-2 bg-vibrantGold/20 backdrop-blur-sm border border-vibrantGold/30 rounded-full px-4 py-2 mb-6">
+            <span className="w-2 h-2 bg-vibrantGold rounded-full animate-pulse"></span>
+            <span className="text-vibrantGold text-sm font-medium">30 жылдан астам тәжірибе</span>
           </div>
-          <div className="flex justify-center">
-            <div className="w-80 h-80 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
-              <div className="w-64 h-64 bg-white/20 rounded-full flex items-center justify-center">
-                <span className="text-8xl">🎨</span>
-              </div>
+
+          {/* Heading */}
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
+            Тараз қаласы<br />
+            <span className="text-vibrantGold">балалар көркемөнер мектебі</span>
+          </h1>
+
+          {/* Description */}
+          <p className="text-base md:text-lg text-blue-100 mb-8 leading-relaxed max-w-2xl">
+            Бұл Тараз қаласының білім беру мекемесі, онда балаларға бейнелеу өнеріне үйретеді,
+            олардың шығармашылық қабілеттерін дамытып, кәсіби педагогтардың жетекшілігімен
+            көркемдік мәдениеттің негіздерімен таныстырады.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-12">
+            <Link
+              href="/contact"
+              className="inline-flex items-center justify-center space-x-2 bg-vibrantGold text-trustBlue font-semibold px-8 py-3 rounded-xl hover:bg-yellow-400 transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              <span>Бізбен байланысыңыз</span>
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+            <Link
+              href="/әкімшілік"
+              className="inline-flex items-center justify-center space-x-2 bg-white/10 backdrop-blur-sm text-white font-semibold px-8 py-3 rounded-xl hover:bg-white/20 transition-all duration-200 border border-white/20"
+            >
+              <span>Көбірек білу</span>
+            </Link>
+          </div>
+
+          {/* Quick Stats - Compact Horizontal */}
+          <div className="flex items-center space-x-6 md:space-x-10">
+            <div className="text-center md:text-left">
+              <div className="text-2xl md:text-3xl font-bold text-white">500+</div>
+              <div className="text-xs md:text-sm text-blue-200">Оқушылар</div>
+            </div>
+            <div className="hidden md:block w-px h-8 bg-white/20"></div>
+            <div className="text-center md:text-left">
+              <div className="text-2xl md:text-3xl font-bold text-white">25+</div>
+              <div className="text-xs md:text-sm text-blue-200">Мұғалімдер</div>
+            </div>
+            <div className="hidden md:block w-px h-8 bg-white/20"></div>
+            <div className="text-center md:text-left">
+              <div className="text-2xl md:text-3xl font-bold text-white">30+</div>
+              <div className="text-xs md:text-sm text-blue-200">Жыл тәжірибе</div>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Wave Decoration */}
+      <div className="absolute bottom-0 left-0 right-0 -z-10">
+        <svg className="w-full h-16 md:h-20 fill-skyTint" viewBox="0 0 1440 100" preserveAspectRatio="none">
+          <path d="M0,50 C360,100 1080,0 1440,50 L1440,100 L0,100 Z" />
+        </svg>
       </div>
     </section>
   );

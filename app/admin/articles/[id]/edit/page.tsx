@@ -73,9 +73,10 @@ export default function EditArticlePage() {
   const addBlock = (type: Block['type']) => {
     const newBlock: EditBlock = {
       id: `block_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      article_id: articleId,
       type,
       content: '',
-      order: blocks.length,
+      order_num: blocks.length,
     };
     setBlocks([...blocks, newBlock]);
   };

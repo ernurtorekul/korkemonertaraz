@@ -9,8 +9,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        trustBlue: '#2B4592',
+        vibrantGold: '#FFD740',
+        skyTint: '#F0F9FF',
+        creativeRed: '#E53935',
+        artisticGreen: '#4CAF50',
+        deepPurple: '#7B1FA2',
+        cyanBlue: '#00BCD4',
+      },
+      fontFamily: {
+        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
       },
     },
   },

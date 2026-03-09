@@ -14,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="kk">
+    <html lang="kk" className="scroll-smooth">
       <body className="antialiased">
         <Navbar />
         <main className="min-h-screen">
