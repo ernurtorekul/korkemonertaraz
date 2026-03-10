@@ -3,27 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguageState } from '@/lib/languageState';
-import { useEffect, useState } from 'react';
 
 export default function ContactPageContent() {
   const [language] = useLanguageState();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-skyTint py-12">
-        <div className="section-container">
-          <div className="text-center mb-12">
-            <h1 className="text-3xl md:text-4xl font-bold text-trustBlue mb-4">Loading...</h1>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   const content = language === 'kk' ? {
     title: 'Байланыс',

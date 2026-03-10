@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { useLanguageState } from '@/lib/languageState';
 import type { Language } from '@/lib/translations';
 
@@ -53,12 +54,19 @@ const openSubmenuRu = [
 ];
 
 export default function Navbar() {
+  const router = useRouter();
   const [language, setLanguage] = useLanguageState();
   const [aboutOpen, setAboutOpen] = useState(false);
   const [studentsOpen, setStudentsOpen] = useState(false);
   const [openOpen, setOpenOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  // Handle navigation for mobile menu links
+  const handleMobileNavigate = (href: string) => {
+    setMobileMenuOpen(false);
+    router.push(href);
+  };
 
   const aboutRef = useRef<HTMLDivElement>(null);
   const studentsRef = useRef<HTMLDivElement>(null);
@@ -101,13 +109,20 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (aboutRef.current && !aboutRef.current.contains(event.target as Node)) {
+      // Skip if click is inside mobile menu
+      const target = event.target as Node;
+      const mobileMenu = document.querySelector('.mobile-menu-container');
+      if (mobileMenu && mobileMenu.contains(target)) {
+        return;
+      }
+
+      if (aboutRef.current && !aboutRef.current.contains(target)) {
         setAboutOpen(false);
       }
-      if (studentsRef.current && !studentsRef.current.contains(event.target as Node)) {
+      if (studentsRef.current && !studentsRef.current.contains(target)) {
         setStudentsOpen(false);
       }
-      if (openRef.current && !openRef.current.contains(event.target as Node)) {
+      if (openRef.current && !openRef.current.contains(target)) {
         setOpenOpen(false);
       }
     };
@@ -304,7 +319,7 @@ export default function Navbar() {
         />
 
         {/* Slide-in menu from right */}
-        <div className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl z-50 md:hidden overflow-y-auto flex flex-col">
+        <div className="mobile-menu-container fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl z-50 md:hidden overflow-y-auto flex flex-col">
           {/* Close button */}
           <div className="px-4 py-4 border-b border-gray-100 flex justify-between items-center flex-shrink-0">
             <span className="font-bold text-lg text-trustBlue">{schoolName}</span>
@@ -346,7 +361,7 @@ export default function Navbar() {
               // Items with submenus - expandable
               if (submenuItems.length > 0) {
                 return (
-                  <div key={name} className="rounded-lg overflow-hidden">
+                  <div key={name} className="rounded-lg" onClick={(e) => e.stopPropagation()}>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -354,7 +369,7 @@ export default function Navbar() {
                         else if (isStudents) toggleMenu('students');
                         else if (isOpenMenu) toggleMenu('open');
                       }}
-                      className="w-full px-4 py-3 text-base font-medium text-trustBlue hover:bg-skyTint transition-colors flex items-center justify-between cursor-pointer"
+                      className="w-full px-4 py-3 text-base font-medium text-trustBlue hover:bg-skyTint transition-colors flex items-center justify-between cursor-pointer rounded-lg"
                     >
                       {name}
                       <svg className={`w-4 h-4 transition-transform duration-200 flex-shrink-0 ${
@@ -364,13 +379,17 @@ export default function Navbar() {
                       </svg>
                     </button>
                     {isSubmenuOpen && (
-                      <div className="bg-gray-50">
+                      <div className="bg-gray-50 mt-1 rounded-lg">
                         {submenuItems.map((item) => (
                           <a
                             key={item.name}
                             href={item.href}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleMobileNavigate(item.href);
+                            }}
                             className="block px-6 py-2.5 text-base text-trustBlue hover:bg-skyTint hover:text-vibrantGold transition-colors border-l-2 border-transparent hover:border-vibrantGold cursor-pointer"
-                            onClick={() => setMobileMenuOpen(false)}
                           >
                             {item.name}
                           </a>
@@ -386,8 +405,11 @@ export default function Navbar() {
                 <a
                   key={name}
                   href={href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleMobileNavigate(href);
+                  }}
                   className="block px-4 py-3 rounded-lg text-base font-medium text-trustBlue hover:bg-skyTint transition-colors cursor-pointer"
-                  onClick={() => setMobileMenuOpen(false)}
                 >
                   {name}
                 </a>
@@ -396,8 +418,11 @@ export default function Navbar() {
 
             <a
               href="/admin"
+              onClick={(e) => {
+                e.preventDefault();
+                handleMobileNavigate('/admin');
+              }}
               className="block px-4 py-3 rounded-lg text-base font-medium bg-skyTint text-trustBlue hover:bg-blue-50 transition-colors cursor-pointer"
-              onClick={() => setMobileMenuOpen(false)}
             >
               {adminLabel}
             </a>
