@@ -204,8 +204,8 @@ export default function Navbar() {
           <div className="section-container">
             <div className="flex justify-between items-center h-20">
               {/* Logo */}
-              <Link href="/" className="flex items-center space-x-3">
-                <div className="relative w-12 h-12">
+              <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
+                <div className="relative w-10 h-10 sm:w-12 sm:h-12">
                   <Image
                     src="/logo.jpeg"
                     alt={logoAlt}
@@ -213,9 +213,9 @@ export default function Navbar() {
                     className="object-contain rounded-full"
                   />
                 </div>
-                <div className="hidden sm:block">
-                  <span className="font-bold text-lg text-trustBlue leading-tight">{schoolName}</span>
-                  <span className="block text-xs text-gray-500">{cityName}</span>
+                <div>
+                  <span className="font-bold text-sm sm:text-lg text-trustBlue leading-tight block">{schoolName}</span>
+                  <span className="text-xs text-gray-500 block">{cityName}</span>
                 </div>
               </Link>
 

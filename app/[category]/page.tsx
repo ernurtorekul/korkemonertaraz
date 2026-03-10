@@ -11,6 +11,7 @@ interface PageProps {
 }
 
 // Map English URL slugs to Kazakh category names
+// Note: 'contact' is excluded as it has its own dedicated page at /contact
 const slugToCategory: Record<string, string> = {
   'administration': 'Әкімшілік',
   'annotation': 'Аннотация',
@@ -20,7 +21,6 @@ const slugToCategory: Record<string, string> = {
   'parents': 'Ата-аналарға',
   'achievements': 'Жетістіктер',
   'documents': 'Нормативтік құжаттар',
-  'contact': 'Байланыс',
   'schedule': 'Сабақ кестесі',
   'student-achievements': 'Оқушылар жетістігі',
   'events': 'Іс-шаралар',
@@ -107,6 +107,7 @@ export default async function CategoryPage({ params }: PageProps) {
 
 export async function generateStaticParams() {
   // Return all category slugs for static generation
+  // Note: 'contact' is excluded as it has its own dedicated page at /contact
   return [
     { category: 'administration' },
     { category: 'annotation' },
@@ -116,7 +117,6 @@ export async function generateStaticParams() {
     { category: 'parents' },
     { category: 'achievements' },
     { category: 'documents' },
-    { category: 'contact' },
     { category: 'schedule' },
     { category: 'student-achievements' },
     { category: 'events' },
