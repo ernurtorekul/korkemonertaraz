@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Block } from '@/types/article';
 import RichTextEditor from '@/components/editor/RichTextEditor';
+import { useLanguageState } from '@/lib/languageState';
 
-const CATEGORIES = [
+const CATEGORIES_KK = [
   'Әкімшілік',
   'Аннотация',
   'Оқу-әдістемелік жұмыстар',
@@ -25,16 +26,110 @@ const CATEGORIES = [
   'Мемлекеттік қызмет',
 ];
 
+const CATEGORIES_RU: Record<string, string> = {
+  'Әкімшілік': 'Администрация',
+  'Аннотация': 'Аннотация',
+  'Оқу-әдістемелік жұмыстар': 'Учебно-методическая работа',
+  'Тәрбие жұмысы': 'Воспитательная работа',
+  'Біздің түлектер': 'Наши выпускники',
+  'Ата-аналарға': 'Родителям',
+  'Жетістіктер': 'Достижения',
+  'Нормативтік құжаттар': 'Нормативные документы',
+  'Байланыс': 'Контакты',
+  'Ақпарат': 'Информация',
+  'Сабақ кестесі': 'Расписание',
+  'Оқушылар жетістігі': 'Достижения учеников',
+  'Іс-шаралар': 'Мероприятия',
+  'Жемқорлыққа қарсы күрес': 'Борьба с коррупцией',
+  'Қамқоршылық кеңес': 'Попечительский совет',
+  'Мемлекеттік қызмет': 'Государственные услуги',
+};
+
 type NewBlock = Omit<Block, 'id' | 'article_id' | 'order_num'>;
 
 export default function NewArticlePage() {
   const router = useRouter();
+  const [language] = useLanguageState();
+  const [mounted, setMounted] = useState(false);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [blocks, setBlocks] = useState<NewBlock[]>([]);
   const [published, setPublished] = useState(false);
   const [saving, setSaving] = useState(false);
   const [eventDate, setEventDate] = useState('');
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const categories = useMemo(() => {
+    return CATEGORIES_KK.map(cat => ({
+      value: cat,
+      label: language === 'kk' ? cat : CATEGORIES_RU[cat]
+    }));
+  }, [language]);
+
+  const content = language === 'kk' ? {
+    pageTitle: 'Жаңа мақала',
+    cancel: 'Бас тарту',
+    titleLabel: 'Тақырып',
+    titlePlaceholder: 'Мақаланың тақырыбы',
+    categoryLabel: 'Санат',
+    categoryPlaceholder: 'Санатты таңдаңыз',
+    eventDateLabel: 'Іс-шараның күні мен уақыты',
+    eventDateHint: 'Іс-шара күні мен уақыты енгізіңіз (мысалы: 15.03.2026 14:30)',
+    publishLabel: 'Жариялау',
+    blockTypeTitle: 'Тақырып',
+    blockTypeText: 'Мәтін',
+    blockTypeImage: 'Сурет',
+    blockTypeFile: 'Файл',
+    change: 'Өзгерту',
+    addTitle: '+ Тақырып',
+    addText: '+ Мәтін',
+    addImage: '+ Сурет',
+    addFile: '+ Файл',
+    saveButton: 'Сақтау',
+    saveButtonLoading: 'Сақтау...',
+    titlePlaceholder2: 'Тақырып мәтіні...',
+    textPlaceholder: 'Мәтін енгізіңіз...',
+    validationError: 'Тақырып, санат және кемінде бір блок қажет',
+  } : {
+    pageTitle: 'Новая статья',
+    cancel: 'Отмена',
+    titleLabel: 'Заголовок',
+    titlePlaceholder: 'Заголовок статьи',
+    categoryLabel: 'Категория',
+    categoryPlaceholder: 'Выберите категорию',
+    eventDateLabel: 'Дата и время мероприятия',
+    eventDateHint: 'Введите дату и время мероприятия (например: 15.03.2026 14:30)',
+    publishLabel: 'Опубликовать',
+    blockTypeTitle: 'Заголовок',
+    blockTypeText: 'Текст',
+    blockTypeImage: 'Изображение',
+    blockTypeFile: 'Файл',
+    change: 'Изменить',
+    addTitle: '+ Заголовок',
+    addText: '+ Текст',
+    addImage: '+ Изображение',
+    addFile: '+ Файл',
+    saveButton: 'Сохранить',
+    saveButtonLoading: 'Сохранение...',
+    titlePlaceholder2: 'Текст заголовка...',
+    textPlaceholder: 'Введите текст...',
+    validationError: 'Необходим заголовок, категория и хотя бы один блок',
+  };
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <header className="bg-white shadow-sm border-b border-gray-200">
+          <div className="max-w-4xl mx-auto px-4 py-4">
+            <h1 className="text-2xl font-bold text-gray-900">Loading...</h1>
+          </div>
+        </header>
+      </div>
+    );
+  }
 
   const addBlock = (type: Block['type']) => {
     const newBlock: NewBlock = { type, content: '' };
@@ -63,13 +158,20 @@ export default function NewArticlePage() {
 
   const handleSave = async () => {
     if (!title || !category || blocks.length === 0) {
-      alert('Тақырып, санат және кемінде бір блок қажет');
+      alert(content.validationError);
       return;
     }
 
     setSaving(true);
     try {
       const token = localStorage.getItem('adminToken');
+
+      let formattedEventDate = null;
+      if (category === 'Іс-шаралар' && eventDate) {
+        const date = new Date(eventDate);
+        formattedEventDate = date.toISOString();
+      }
+
       const response = await fetch('/api/admin/articles', {
         method: 'POST',
         headers: {
@@ -81,7 +183,7 @@ export default function NewArticlePage() {
           category,
           blocks,
           published,
-          event_date: category === 'Іс-шаралар' ? eventDate : null,
+          event_date: formattedEventDate,
         }),
       });
 
@@ -117,12 +219,22 @@ export default function NewArticlePage() {
       } else {
         const errorData = await response.json().catch(() => ({}));
         const errorMessage = errorData.error || 'Failed to upload file';
-        alert(`Файлды жүктеу сәтсіз аяқталды: ${errorMessage}`);
+        alert(`File upload failed: ${errorMessage}`);
         console.error('Upload error:', errorData);
       }
     } catch (error) {
-      alert(`Файлды жүктеу кезінде қате орын алды: ${error instanceof Error ? error.message : 'Белгісіз қате'}`);
+      alert(`Upload error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       console.error('Upload error:', error);
+    }
+  };
+
+  const getBlockTypeLabel = (type: Block['type']) => {
+    switch (type) {
+      case 'title': return content.blockTypeTitle;
+      case 'text': return content.blockTypeText;
+      case 'image': return content.blockTypeImage;
+      case 'file': return content.blockTypeFile;
+      default: return type;
     }
   };
 
@@ -131,12 +243,12 @@ export default function NewArticlePage() {
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">Жаңа мақала</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{content.pageTitle}</h1>
           <Link
             href="/admin/dashboard"
             className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
           >
-            Бас тарту
+            {content.cancel}
           </Link>
         </div>
       </header>
@@ -147,30 +259,30 @@ export default function NewArticlePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Тақырып
+                {content.titleLabel}
               </label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
-                placeholder="Мақаланың тақырыбы"
+                placeholder={content.titlePlaceholder}
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Санат
+                {content.categoryLabel}
               </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
               >
-                <option value="">Санатты таңдаңыз</option>
-                {CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
+                <option value="">{content.categoryPlaceholder}</option>
+                {categories.map((cat) => (
+                  <option key={cat.value} value={cat.value}>
+                    {cat.label}
                   </option>
                 ))}
               </select>
@@ -181,7 +293,7 @@ export default function NewArticlePage() {
           {category === 'Іс-шаралар' && (
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Іс-шараның күні мен уақыты
+                {content.eventDateLabel}
               </label>
               <input
                 type="datetime-local"
@@ -190,7 +302,7 @@ export default function NewArticlePage() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-vibrantGold text-gray-900"
               />
               <p className="text-xs text-gray-500 mt-1">
-                Іс-шара күні мен уақыты енгізіңіз (мысалы: 15.03.2026 14:30)
+                {content.eventDateHint}
               </p>
             </div>
           )}
@@ -202,7 +314,7 @@ export default function NewArticlePage() {
               onChange={(e) => setPublished(e.target.checked)}
               className="rounded"
             />
-            <span className="text-sm font-medium text-gray-700">Жариялау</span>
+            <span className="text-sm font-medium text-gray-700">{content.publishLabel}</span>
           </label>
         </div>
 
@@ -212,10 +324,7 @@ export default function NewArticlePage() {
             <div key={index} className="bg-white rounded-lg shadow p-6">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-sm font-medium text-gray-500 uppercase">
-                  {block.type === 'title' && 'Тақырып'}
-                  {block.type === 'text' && 'Мәтін'}
-                  {block.type === 'image' && 'Сурет'}
-                  {block.type === 'file' && 'Файл'}
+                  {getBlockTypeLabel(block.type)}
                 </span>
                 <div className="flex gap-2">
                   <button
@@ -247,7 +356,7 @@ export default function NewArticlePage() {
                   value={block.content}
                   onChange={(e) => updateBlock(index, e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg text-xl font-semibold text-gray-900"
-                  placeholder="Тақырып мәтіні..."
+                  placeholder={content.titlePlaceholder2}
                 />
               )}
 
@@ -255,7 +364,7 @@ export default function NewArticlePage() {
                 <RichTextEditor
                   content={block.content}
                   onChange={(content) => updateBlock(index, content)}
-                  placeholder="Мәтін енгізіңіз..."
+                  placeholder={content.textPlaceholder}
                 />
               )}
 
@@ -268,7 +377,7 @@ export default function NewArticlePage() {
                         onClick={() => updateBlock(index, '')}
                         className="mt-2 text-sm text-red-600 hover:underline"
                       >
-                        Өзгерту
+                        {content.change}
                       </button>
                     </div>
                   ) : (
@@ -296,7 +405,7 @@ export default function NewArticlePage() {
                         onClick={() => updateBlock(index, '')}
                         className="text-sm text-red-600 hover:underline"
                       >
-                        Өзгерту
+                        {content.change}
                       </button>
                     </div>
                   ) : (
@@ -322,25 +431,25 @@ export default function NewArticlePage() {
             onClick={() => addBlock('title')}
             className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
           >
-            + Тақырып
+            {content.addTitle}
           </button>
           <button
             onClick={() => addBlock('text')}
             className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
           >
-            + Мәтін
+            {content.addText}
           </button>
           <button
             onClick={() => addBlock('image')}
             className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
           >
-            + Сурет
+            {content.addImage}
           </button>
           <button
             onClick={() => addBlock('file')}
             className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
           >
-            + Файл
+            {content.addFile}
           </button>
         </div>
 
@@ -350,14 +459,14 @@ export default function NewArticlePage() {
             href="/admin/dashboard"
             className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
           >
-            Бас тарту
+            {content.cancel}
           </Link>
           <button
             onClick={handleSave}
             disabled={saving}
             className="px-6 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-800 disabled:opacity-50"
           >
-            {saving ? 'Сақтау...' : 'Сақтау'}
+            {saving ? content.saveButtonLoading : content.saveButton}
           </button>
         </div>
       </main>

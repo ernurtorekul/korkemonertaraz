@@ -3,17 +3,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
+import { useLanguageState } from '@/lib/languageState';
+import type { Language } from '@/lib/translations';
 
-const navigation = {
-  'Ақпарат': '/',
-  'Біз туралы': '#about',
-  'Оқушыларға': '#students',
-  'Іс-шаралар': '/events',
-  'Ашық орган': '#open',
-  // 'Байланыс': '/contact',
-};
-
-const aboutSubmenu = [
+const aboutSubmenuKk = [
   { name: 'Әкімшілік', href: '/administration' },
   { name: 'Аннотация', href: '/annotation' },
   { name: 'Оқу-әдістемелік жұмыстар', href: '/teaching-materials' },
@@ -25,18 +18,42 @@ const aboutSubmenu = [
   { name: 'Байланыс', href: '/contact' },
 ];
 
-const studentsSubmenu = [
+const studentsSubmenuKk = [
   { name: 'Сабақ кестесі', href: '/schedule' },
   { name: 'Оқушылар жетістігі', href: '/student-achievements' },
 ];
 
-const openSubmenu = [
+const openSubmenuKk = [
   { name: 'Жемқорлыққа қарсы күрес', href: '/anti-corruption' },
   { name: 'Қамқоршылық кеңес', href: '/trustee-council' },
   { name: 'Мемлекеттік қызмет', href: '/public-services' },
 ];
 
+const aboutSubmenuRu = [
+  { name: 'Администрация', href: '/administration' },
+  { name: 'Аннотация', href: '/annotation' },
+  { name: 'Учебно-методическая работа', href: '/teaching-materials' },
+  { name: 'Воспитательная работа', href: '/educational-work' },
+  { name: 'Наши выпускники', href: '/graduates' },
+  { name: 'Родителям', href: '/parents' },
+  { name: 'Достижения', href: '/achievements' },
+  { name: 'Нормативные документы', href: '/documents' },
+  { name: 'Контакты', href: '/contact' },
+];
+
+const studentsSubmenuRu = [
+  { name: 'Расписание', href: '/schedule' },
+  { name: 'Достижения учеников', href: '/student-achievements' },
+];
+
+const openSubmenuRu = [
+  { name: 'Борьба с коррупцией', href: '/anti-corruption' },
+  { name: 'Попечительский совет', href: '/trustee-council' },
+  { name: 'Государственные услуги', href: '/public-services' },
+];
+
 export default function Navbar() {
+  const [language, setLanguage] = useLanguageState();
   const [aboutOpen, setAboutOpen] = useState(false);
   const [studentsOpen, setStudentsOpen] = useState(false);
   const [openOpen, setOpenOpen] = useState(false);
@@ -46,6 +63,33 @@ export default function Navbar() {
   const aboutRef = useRef<HTMLDivElement>(null);
   const studentsRef = useRef<HTMLDivElement>(null);
   const openRef = useRef<HTMLDivElement>(null);
+
+  // Get navigation items based on language
+  const navigation = language === 'kk' ? {
+    'Ақпарат': '/',
+    'Біз туралы': '#about',
+    'Оқушыларға': '#students',
+    'Іс-шаралар': '/events',
+    'Ашық орган': '#open',
+  } : {
+    'Главная': '/',
+    'О нас': '#about',
+    'Ученикам': '#students',
+    'Мероприятия': '/events',
+    'Открытые органы': '#open',
+  };
+
+  const aboutSubmenu = language === 'kk' ? aboutSubmenuKk : aboutSubmenuRu;
+  const studentsSubmenu = language === 'kk' ? studentsSubmenuKk : studentsSubmenuRu;
+  const openSubmenu = language === 'kk' ? openSubmenuKk : openSubmenuRu;
+
+  const aboutLabel = language === 'kk' ? 'Біз туралы' : 'О нас';
+  const studentsLabel = language === 'kk' ? 'Оқушыларға' : 'Ученикам';
+  const openLabel = language === 'kk' ? 'Ашық орган' : 'Открытые органы';
+  const adminLabel = language === 'kk' ? 'Администратор' : 'Администратор';
+  const schoolName = language === 'kk' ? 'Көркемөнер мектебі' : 'Художественная школа';
+  const cityName = language === 'kk' ? 'Тараз қаласы' : 'г. Тараз';
+  const logoAlt = language === 'kk' ? 'Көркемөнер мектебі логотипі' : 'Логотип художественной школы';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -111,6 +155,31 @@ export default function Navbar() {
     </div>
   );
 
+  const LanguageSwitcher = () => (
+    <div className="flex items-center bg-skyTint rounded-lg p-1">
+      <button
+        onClick={() => setLanguage('kk')}
+        className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+          language === 'kk'
+            ? 'bg-white text-trustBlue shadow-sm'
+            : 'text-gray-600 hover:text-trustBlue'
+        }`}
+      >
+        ҚАЗ
+      </button>
+      <button
+        onClick={() => setLanguage('ru')}
+        className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+          language === 'ru'
+            ? 'bg-white text-trustBlue shadow-sm'
+            : 'text-gray-600 hover:text-trustBlue'
+        }`}
+      >
+        РУС
+      </button>
+    </div>
+  );
+
   return (
     <nav className={`bg-white sticky top-0 z-50 transition-all duration-300 ${
       scrolled ? 'shadow-md' : 'shadow-sm'
@@ -123,26 +192,31 @@ export default function Navbar() {
               <div className="relative w-12 h-12">
                 <Image
                   src="/logo.jpeg"
-                  alt="Көркемөнер мектебі логотипі"
+                  alt={logoAlt}
                   fill
                   className="object-contain rounded-full"
                 />
               </div>
               <div className="hidden sm:block">
-                <span className="font-bold text-lg text-trustBlue leading-tight">Көркемөнер мектебі</span>
-                <span className="block text-xs text-gray-500">Тараз қаласы</span>
+                <span className="font-bold text-lg text-trustBlue leading-tight">{schoolName}</span>
+                <span className="block text-xs text-gray-500">{cityName}</span>
               </div>
             </Link>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-1">
-              {Object.entries(navigation).map(([name, href]) => (
-                <div key={name} className="relative" ref={
-                  name === 'Біз туралы' ? aboutRef :
-                  name === 'Оқушыларға' ? studentsRef :
-                  name === 'Ашық орган' ? openRef : null
+              {Object.entries(navigation).map(([name, href]) => {
+                const isAbout = name === aboutLabel;
+                const isStudents = name === studentsLabel;
+                const isOpen = isAbout ? aboutOpen : isStudents ? studentsOpen : openOpen;
+
+                return (
+                  <div key={name} className="relative" ref={
+                  isAbout ? aboutRef :
+                  isStudents ? studentsRef :
+                  name === openLabel ? openRef : null
                 }>
-                  {name === 'Ақпарат' || name === 'Іс-шаралар' || name === 'Байланыс' ? (
+                  {href === '/' || href === '/events' ? (
                     <Link href={href} className="px-4 py-2 rounded-lg text-sm font-medium text-trustBlue hover:bg-skyTint hover:text-vibrantGold transition-all duration-200">
                       {name}
                     </Link>
@@ -150,25 +224,21 @@ export default function Navbar() {
                     <>
                       <button
                         onClick={() => {
-                          if (name === 'Біз туралы') toggleMenu('about');
-                          if (name === 'Оқушыларға') toggleMenu('students');
-                          if (name === 'Ашық орган') toggleMenu('open');
+                          if (isAbout) toggleMenu('about');
+                          else if (isStudents) toggleMenu('students');
+                          else if (name === openLabel) toggleMenu('open');
                         }}
                         className="px-4 py-2 rounded-lg text-sm font-medium text-trustBlue hover:bg-skyTint hover:text-vibrantGold transition-all duration-200 flex items-center gap-1"
                       >
                         {name}
                         <svg className={`w-4 h-4 transition-transform duration-200 ${
-                          (name === 'Біз туралы' && aboutOpen) ||
-                          (name === 'Оқушыларға' && studentsOpen) ||
-                          (name === 'Ашық орган' && openOpen)
-                            ? 'rotate-180'
-                            : ''
+                          isOpen ? 'rotate-180' : ''
                         }`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                         </svg>
                       </button>
 
-                      {name === 'Біз туралы' && (
+                      {isAbout && (
                         <DropdownMenu
                           items={aboutSubmenu}
                           isOpen={aboutOpen}
@@ -176,7 +246,7 @@ export default function Navbar() {
                         />
                       )}
 
-                      {name === 'Оқушыларға' && (
+                      {isStudents && (
                         <DropdownMenu
                           items={studentsSubmenu}
                           isOpen={studentsOpen}
@@ -184,7 +254,7 @@ export default function Navbar() {
                         />
                       )}
 
-                      {name === 'Ашық орган' && (
+                      {name === openLabel && (
                         <DropdownMenu
                           items={openSubmenu}
                           isOpen={openOpen}
@@ -194,16 +264,18 @@ export default function Navbar() {
                     </>
                   )}
                 </div>
-              ))}
+              );
+              })}
             </div>
 
-            {/* Admin Link */}
+            {/* Language Switcher & Admin */}
             <div className="hidden md:flex items-center space-x-3">
+              <LanguageSwitcher />
               <Link
                 href="/admin"
                 className="px-4 py-2 rounded-lg text-sm font-medium text-trustBlue hover:bg-skyTint hover:text-vibrantGold transition-all duration-200"
               >
-                Администратор
+                {adminLabel}
               </Link>
             </div>
 
@@ -223,6 +295,9 @@ export default function Navbar() {
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-gray-100 bg-white">
             <div className="section-container py-4 space-y-2">
+              <div className="flex justify-center mb-4">
+                <LanguageSwitcher />
+              </div>
               {Object.entries(navigation).map(([name, href]) => (
                 <Link
                   key={name}
@@ -238,7 +313,7 @@ export default function Navbar() {
                 className="block px-4 py-3 rounded-lg text-base font-medium bg-skyTint text-trustBlue hover:bg-blue-50 transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Администратор
+                {adminLabel}
               </Link>
             </div>
           </div>

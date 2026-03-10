@@ -1,58 +1,14 @@
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
 import { getArticles } from '@/lib/supabase/articles';
 import type { Article } from '@/types/article';
+import CategoryPageContent from '@/components/pages/CategoryPageContent';
+import CategoryPageHeader from '@/components/pages/CategoryPageHeader';
 
 interface PageProps {
   params: Promise<{
     category: string;
   }>;
 }
-
-// Safe date parsing function
-function formatDate(dateString: string | null | undefined): string {
-  if (!dateString) return '';
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return '';
-    return date.toLocaleDateString('kk-KZ', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  } catch {
-    return '';
-  }
-}
-
-// Format event date with time (e.g., "15 Наурыз 2026, 14:30")
-function formatEventDate(dateString: string | null | undefined): string {
-  if (!dateString) return '';
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return '';
-
-    const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    };
-
-    return date.toLocaleDateString('kk-KZ', options);
-  } catch {
-    return '';
-  }
-}
-
-// Get the first image URL from blocks, or return null
-const getFirstImageUrl = (blocks: any[] | undefined): string | null => {
-  if (!blocks) return null;
-  const imageBlock = blocks.find(block => block.type === 'image');
-  return imageBlock?.content || null;
-};
 
 // Map English URL slugs to Kazakh category names
 const slugToCategory: Record<string, string> = {
@@ -127,141 +83,23 @@ export default async function CategoryPage({ params }: PageProps) {
   const { category } = await params;
   const { articles, categoryName } = await getArticlesByCategory(category);
 
+  const categorySlug = category.toLowerCase().replace(/\s+/g, '-');
+
   if (articles.length === 0) {
     return (
       <div className="min-h-screen bg-skyTint py-16">
         <div className="section-container">
-          <div className="max-w-2xl mx-auto text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-trustBlue mb-4">{categoryName}</h1>
-            <div className="w-16 h-1 bg-vibrantGold mx-auto mb-8 rounded-full"></div>
-            <div className="bg-white rounded-xl shadow-sm p-12 text-center text-gray-500">
-              <svg className="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-              </svg>
-              <p className="text-lg">Әзірше бұл санат бойынша мақалалар жоқ</p>
-            </div>
-          </div>
+          <CategoryPageHeader categoryName={categoryName} isEmpty />
         </div>
       </div>
     );
   }
 
-  // Always show list of articles (even if only one)
-  const categorySlug = category.toLowerCase().replace(/\s+/g, '-');
-
   return (
     <div className="min-h-screen bg-skyTint py-12">
       <div className="section-container">
-        {/* Section Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold text-trustBlue mb-2">{categoryName}</h1>
-          <div className="w-16 h-1 bg-vibrantGold mx-auto rounded-full"></div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {articles.map((article) => {
-            const imageUrl = getFirstImageUrl(article.blocks);
-            const isEvent = categoryName === 'Іс-шаралар';
-
-            // For events, get calendar-style date info
-            const getEventDayInfo = (dateString: string | null | undefined) => {
-              if (!dateString) return null;
-              try {
-                const date = new Date(dateString);
-                if (isNaN(date.getTime())) return null;
-                return {
-                  day: date.getDate().toString(),
-                  month: date.toLocaleDateString('kk-KZ', { month: 'long' }),
-                  dayName: date.toLocaleDateString('kk-KZ', { weekday: 'long' }),
-                };
-              } catch {
-                return null;
-              }
-            };
-
-            const eventInfo = isEvent ? getEventDayInfo(article.event_date) : null;
-
-            return (
-              <Link
-                key={article.id}
-                href={`/${categorySlug}/${article.id}`}
-                className="card group overflow-hidden flex flex-col"
-              >
-                {/* Card Image */}
-                <div className="relative h-48 bg-gradient-to-br from-trustBlue to-blue-700 overflow-hidden flex-shrink-0">
-                  {imageUrl ? (
-                    <>
-                      <Image
-                        src={imageUrl}
-                        alt={article.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-trustBlue/60 to-transparent"></div>
-                    </>
-                  ) : (
-                    <>
-                      <Image
-                        src="/logo.jpeg"
-                        alt="Көркемөнер мектебі"
-                        fill
-                        className="object-contain p-6 bg-white/90"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-trustBlue/60 to-transparent"></div>
-                    </>
-                  )}
-
-                  {/* Date Badge - different style for events */}
-                  {isEvent && eventInfo ? (
-                    <div className="absolute top-3 right-3">
-                      <div className="bg-vibrantGold text-trustBlue rounded-lg p-2 text-center shadow-lg min-w-[60px]">
-                        <div className="text-xs font-medium opacity-90 leading-tight">{eventInfo.month}</div>
-                        <div className="text-xl font-bold leading-none">{eventInfo.day}</div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="absolute bottom-3 left-3">
-                      <span className="inline-block bg-vibrantGold text-trustBlue text-xs font-bold px-3 py-1 rounded-full">
-                        {formatDate(article.created_at)}
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Card Content */}
-                <div className="p-5 flex-1 flex flex-col">
-                  <h3 className="text-lg font-bold text-trustBlue mb-3 line-clamp-2 group-hover:text-vibrantGold transition-colors">
-                    {article.title}
-                  </h3>
-
-                  {/* Event date/time display */}
-                  {isEvent && article.event_date && (
-                    <div className="flex items-center text-sm text-gray-500 mb-3">
-                      <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <time className="truncate">{formatEventDate(article.event_date)}</time>
-                    </div>
-                  )}
-
-                  {article.blocks && article.blocks.length > 0 && article.blocks[0].type === 'text' && (
-                    <p className="text-gray-600 text-sm line-clamp-3 leading-relaxed flex-1">
-                      {article.blocks[0].content.replace(/<[^>]*>/g, '').substring(0, 150)}...
-                    </p>
-                  )}
-
-                  {/* Read More */}
-                  <div className="mt-4 flex items-center text-trustBlue font-semibold text-sm group-hover:text-vibrantGold transition-colors">
-                    <span>Толық оқу</span>
-                    <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+        <CategoryPageHeader categoryName={categoryName} />
+        <CategoryPageContent articles={articles} categorySlug={categorySlug} />
       </div>
     </div>
   );

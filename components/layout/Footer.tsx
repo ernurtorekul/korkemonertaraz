@@ -1,7 +1,24 @@
+'use client';
+
 import Link from "next/link";
 import Image from "next/image";
+import { useLanguageState } from "@/lib/languageState";
+import type { Language } from "@/lib/translations";
 
 export default function Footer() {
+  const [language] = useLanguageState();
+
+  const schoolName = language === 'kk' ? 'Көркемөнер мектебі' : 'Художественная школа';
+  const cityName = language === 'kk' ? 'Тараз қаласы' : 'г. Тараз';
+  const quickLinksTitle = language === 'kk' ? 'Тез сілтемелер' : 'Быстрые ссылки';
+  const home = language === 'kk' ? 'Басты бет' : 'Главная';
+  const contact = language === 'kk' ? 'Байланыс' : 'Контакты';
+  const achievements = language === 'kk' ? 'Жетістіктер' : 'Достижения';
+  const graduates = language === 'kk' ? 'Түлектер' : 'Выпускники';
+  const contactTitle = language === 'kk' ? 'Байланыс' : 'Контакты';
+  const address = language === 'kk' ? 'Тараз қаласы, Астана мөлтек ауданы №32' : 'г. Тараз, мкр. Астана, д. №32';
+  const copyright = language === 'kk' ? 'Тараз қаласы балалар көркемөнер мектебі' : 'Детская художественная школа г. Тараз';
+
   return (
     <footer className="bg-trustBlue text-white">
       <div className="section-container py-10 md:py-12">
@@ -12,21 +29,20 @@ export default function Footer() {
               <div className="relative w-12 h-12">
                 <Image
                   src="/logo.jpeg"
-                  alt="Көркемөнер мектебі логотипі"
+                  alt={`${schoolName} логотипі`}
                   fill
                   className="object-contain rounded-full"
                 />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-vibrantGold">
-                  Көркемөнер мектебі
-                </h3>
-                <p className="text-xs text-blue-200">Тараз қаласы</p>
+                <h3 className="text-lg font-bold text-vibrantGold">{schoolName}</h3>
+                <p className="text-xs text-blue-200">{cityName}</p>
               </div>
             </div>
             <p className="text-blue-100 text-sm leading-relaxed mb-5 max-w-md">
-              Жамбыл облысы әкімдігінің, білім басқармасы Тараз қаласының, білім
-              бөлімінің, балалар көркемөнер мектебі
+              {language === 'kk'
+                ? 'Жамбыл облысы әкімдігінің, білім басқармасы Тараз қаласының, білім бөлімінің, балалар көркемөнер мектебі'
+                : 'Детская художественная школа Управления образования г. Тараз, Жамбылской области'}
             </p>
             <div className="flex space-x-3">
               <a
@@ -65,14 +81,14 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-bold mb-4 text-vibrantGold">Тез сілтемелер</h4>
+            <h4 className="font-bold mb-4 text-vibrantGold">{quickLinksTitle}</h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link
                   href="/"
                   className="text-blue-100 hover:text-white transition-colors"
                 >
-                  Басты бет
+                  {home}
                 </Link>
               </li>
               <li>
@@ -80,7 +96,7 @@ export default function Footer() {
                   href="/contact"
                   className="text-blue-100 hover:text-white transition-colors"
                 >
-                  Байланыс
+                  {contact}
                 </Link>
               </li>
               <li>
@@ -88,7 +104,7 @@ export default function Footer() {
                   href="/achievements"
                   className="text-blue-100 hover:text-white transition-colors"
                 >
-                  Жетістіктер
+                  {achievements}
                 </Link>
               </li>
               <li>
@@ -96,7 +112,7 @@ export default function Footer() {
                   href="/graduates"
                   className="text-blue-100 hover:text-white transition-colors"
                 >
-                  Түлектер
+                  {graduates}
                 </Link>
               </li>
             </ul>
@@ -104,7 +120,7 @@ export default function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h4 className="font-bold mb-4 text-vibrantGold">Байланыс</h4>
+            <h4 className="font-bold mb-4 text-vibrantGold">{contactTitle}</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start space-x-2">
                 <svg
@@ -127,7 +143,7 @@ export default function Footer() {
                   />
                 </svg>
                 <span className="text-blue-100">
-                  Тараз қаласы, Астана мөлтек ауданы №32
+                  {address}
                 </span>
               </li>
               <li className="flex items-center space-x-2">
@@ -198,23 +214,8 @@ export default function Footer() {
         <div className="section-container py-4">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0 text-sm">
             <p className="text-blue-200 text-center md:text-left">
-              &copy; {new Date().getFullYear()} Тараз қаласы балалар көркемөнер
-              мектебі
+              &copy; {new Date().getFullYear()} {copyright}
             </p>
-            {/* <div className="flex items-center space-x-4 text-blue-200">
-              <Link
-                href="/privacy"
-                className="hover:text-white transition-colors text-xs"
-              >
-                Жеке деректер
-              </Link>
-              <Link
-                href="/documents"
-                className="hover:text-white transition-colors text-xs"
-              >
-                Құжаттар
-              </Link>
-            </div> */}
           </div>
         </div>
       </div>

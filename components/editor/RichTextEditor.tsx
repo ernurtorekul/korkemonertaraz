@@ -2,7 +2,8 @@
 
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { useEffect, useCallback } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useLanguageState } from '@/lib/languageState';
 
 interface RichTextEditorProps {
   content: string;
@@ -10,7 +11,43 @@ interface RichTextEditorProps {
   placeholder?: string;
 }
 
-export default function RichTextEditor({ content, onChange, placeholder = 'Мәтін енгізіңіз...' }: RichTextEditorProps) {
+export default function RichTextEditor({ content, onChange, placeholder }: RichTextEditorProps) {
+  const [language] = useLanguageState();
+
+  const contentText = useMemo(() => language === 'kk' ? {
+    loading: 'Жүктелуде...',
+    bold: 'Жуан (Bold)',
+    italic: 'Көлбеу (Italic)',
+    strike: 'Сызылған (Strike through)',
+    bulletList: 'Тізім (Bullet list)',
+    numberedList: 'Нөмірленген тізім (Numbered list)',
+    heading1: 'Тақырып 1',
+    heading2: 'Тақырып 2',
+    paragraph: 'Параграф',
+    inlineCode: 'Ішкі код (Inline code)',
+    codeBlock: 'Код блогы (Code block)',
+    clearFormatting: 'Форматты алып тастау',
+    undo: 'Болдырмау (Undo)',
+    redo: 'Қайтару (Redo)',
+    placeholder: placeholder || 'Мәтін енгізіңіз...',
+  } : {
+    loading: 'Загрузка...',
+    bold: 'Жирный (Bold)',
+    italic: 'Курсив (Italic)',
+    strike: 'Зачеркнутый (Strike through)',
+    bulletList: 'Маркированный список (Bullet list)',
+    numberedList: 'Нумерованный список (Numbered list)',
+    heading1: 'Заголовок 1',
+    heading2: 'Заголовок 2',
+    paragraph: 'Параграф',
+    inlineCode: 'Встроенный код (Inline code)',
+    codeBlock: 'Блок кода (Code block)',
+    clearFormatting: 'Убрать форматирование',
+    undo: 'Отменить (Undo)',
+    redo: 'Повторить (Redo)',
+    placeholder: placeholder || 'Введите текст...',
+  }, [language, placeholder]);
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -30,7 +67,6 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Мә�
     },
   });
 
-  // Update editor content when the prop changes (but only if different)
   useEffect(() => {
     if (editor && content !== editor.getHTML()) {
       editor.commands.setContent(content, false);
@@ -41,7 +77,7 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Мә�
     return (
       <div className="w-full border border-gray-300 rounded-lg">
         <div className="w-full px-4 py-3 min-h-[150px] text-gray-400">
-          Жүктелуде...
+          {contentText.loading}
         </div>
       </div>
     );
@@ -73,13 +109,11 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Мә�
 
   return (
     <div className="border border-gray-300 rounded-lg overflow-hidden">
-      {/* Toolbar */}
       <div className="border-b border-gray-300 bg-gray-50 p-2 flex flex-wrap gap-1">
-        {/* Bold */}
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           active={editor.isActive('bold')}
-          title="Жуан (Bold)"
+          title={contentText.bold}
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
@@ -91,11 +125,10 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Мә�
           </svg>
         </ToolbarButton>
 
-        {/* Italic */}
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleItalic().run()}
           active={editor.isActive('italic')}
-          title="Көлбеу (Italic)"
+          title={contentText.italic}
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
@@ -107,11 +140,10 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Мә�
           </svg>
         </ToolbarButton>
 
-        {/* Strike */}
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleStrike().run()}
           active={editor.isActive('strike')}
-          title="Сызылған (Strike through)"
+          title={contentText.strike}
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
@@ -125,11 +157,10 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Мә�
 
         <div className="w-px h-6 bg-gray-300 mx-1" />
 
-        {/* Bullet List */}
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           active={editor.isActive('bulletList')}
-          title="Тізім (Bullet list)"
+          title={contentText.bulletList}
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
@@ -141,11 +172,10 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Мә�
           </svg>
         </ToolbarButton>
 
-        {/* Ordered List */}
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           active={editor.isActive('orderedList')}
-          title="Нөмірленген тізім (Numbered list)"
+          title={contentText.numberedList}
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
@@ -159,31 +189,28 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Мә�
 
         <div className="w-px h-6 bg-gray-300 mx-1" />
 
-        {/* H1 */}
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
           active={editor.isActive('heading', { level: 1 })}
-          title="Тақырып 1"
+          title={contentText.heading1}
         >
           <span className="font-bold text-lg">H1</span>
         </ToolbarButton>
 
-        {/* H2 */}
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
           active={editor.isActive('heading', { level: 2 })}
-          title="Тақырып 2"
+          title={contentText.heading2}
         >
           <span className="font-bold text-base">H2</span>
         </ToolbarButton>
 
         <div className="w-px h-6 bg-gray-300 mx-1" />
 
-        {/* Paragraph */}
         <ToolbarButton
           onClick={() => editor.chain().focus().setParagraph().run()}
           active={editor.isActive('paragraph')}
-          title="Параграф"
+          title={contentText.paragraph}
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
@@ -195,11 +222,10 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Мә�
           </svg>
         </ToolbarButton>
 
-        {/* Code Block */}
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleCode().run()}
           active={editor.isActive('code')}
-          title="Ішкі код (Inline code)"
+          title={contentText.inlineCode}
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
@@ -211,11 +237,10 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Мә�
           </svg>
         </ToolbarButton>
 
-        {/* Code Block */}
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleCodeBlock().run()}
           active={editor.isActive('codeBlock')}
-          title="Код блогы (Code block)"
+          title={contentText.codeBlock}
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
@@ -229,10 +254,9 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Мә�
 
         <div className="w-px h-6 bg-gray-300 mx-1" />
 
-        {/* Clear Formatting */}
         <ToolbarButton
           onClick={() => editor.chain().focus().unsetAllMarks().run()}
-          title="Форматты алып тастау"
+          title={contentText.clearFormatting}
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
@@ -244,10 +268,9 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Мә�
           </svg>
         </ToolbarButton>
 
-        {/* Undo */}
         <ToolbarButton
           onClick={() => editor.chain().focus().undo().run()}
-          title="Болдырмау (Undo)"
+          title={contentText.undo}
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
@@ -259,10 +282,9 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Мә�
           </svg>
         </ToolbarButton>
 
-        {/* Redo */}
         <ToolbarButton
           onClick={() => editor.chain().focus().redo().run()}
-          title="Қайтару (Redo)"
+          title={contentText.redo}
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
@@ -275,12 +297,11 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Мә�
         </ToolbarButton>
       </div>
 
-      {/* Editor */}
       <div className="relative">
         <EditorContent editor={editor} />
         {editor.isEmpty && (
           <div className="absolute top-3 left-4 pointer-events-none text-gray-400">
-            {placeholder}
+            {contentText.placeholder}
           </div>
         )}
       </div>

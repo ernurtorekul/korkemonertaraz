@@ -54,6 +54,22 @@ export async function verifyAdminSession(token: string): Promise<boolean> {
   }
 }
 
+// Server-side: Verify JWT token and return user data
+export async function verifyToken(token: string) {
+  try {
+    const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
+
+    if (error || !user) {
+      throw new Error('Invalid token');
+    }
+
+    return user;
+  } catch (error) {
+    console.error('Error verifying token:', error);
+    throw new Error('Invalid token');
+  }
+}
+
 // Server-side: Create a new admin user
 export async function createAdminUser(email: string, password: string): Promise<void> {
   const { data, error } = await supabaseAdmin.auth.admin.createUser({

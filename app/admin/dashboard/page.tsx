@@ -1,31 +1,73 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Article } from '@/types/article';
-
-// Safe date parsing function
-function formatDate(dateString: string | null | undefined): string {
-  if (!dateString) return '';
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return '';
-    return date.toLocaleDateString('kk-KZ', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  } catch {
-    return '';
-  }
-}
+import { useLanguageState } from '@/lib/languageState';
 
 export default function AdminDashboard() {
   const router = useRouter();
+  const [language] = useLanguageState();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const content = useMemo(() => language === 'kk' ? {
+    adminPanel: 'Админ панель',
+    newArticle: 'Жаңа мақала',
+    logout: 'Шығу',
+    articles: 'Мақалалар',
+    noArticles: 'Әзірше мақалалар жоқ',
+    published: 'Жарияланған',
+    unpublished: 'Жарияланбаған',
+    edit: 'Өңдеу',
+    delete: 'Өшіру',
+    deleteConfirm: 'Бұл мақаланы өшіруді қалайсыз ба?',
+    fetchError: 'Мақаларды алу мүмкін емес',
+    errorOccurred: 'Қате орын алды',
+    deleteFailed: 'Мақаланы өшу мүмкін емес',
+    loadingText: 'Жүктелуде...',
+  } : {
+    adminPanel: 'Панель администратора',
+    newArticle: 'Новая статья',
+    logout: 'Выйти',
+    articles: 'Статьи',
+    noArticles: 'Пока нет статей',
+    published: 'Опубликовано',
+    unpublished: 'Не опубликовано',
+    edit: 'Редактировать',
+    delete: 'Удалить',
+    deleteConfirm: 'Вы уверены, что хотите удалить эту статью?',
+    fetchError: 'Не удалось получить статьи',
+    errorOccurred: 'Произошла ошибка',
+    deleteFailed: 'Не удалось удалить статью',
+    loadingText: 'Загрузка...',
+  }, [language]);
+
+  const formatDate = (dateString: string | null | undefined): string => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return '';
+
+      const day = date.getDate();
+      const year = date.getFullYear();
+      const monthIndex = date.getMonth();
+
+      if (language === 'kk') {
+        const monthsKk = ['қаңтар', 'ақпан', 'наурыз', 'сәуір', 'мамыр', 'маусым',
+                          'шілде', 'тамыз', 'қыркүйек', 'қазан', 'қараша', 'желтоқсан'];
+        return `${day} ${monthsKk[monthIndex]} ${year} ж.`;
+      } else {
+        const monthsRu = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+                          'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+        return `${day} ${monthsRu[monthIndex]} ${year} г.`;
+      }
+    } catch {
+      return '';
+    }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('adminToken');
@@ -52,20 +94,20 @@ export default function AdminDashboard() {
           const data = await response.json();
           setArticles(data);
         } else {
-          setError('Failed to fetch articles');
+          setError(content.fetchError);
         }
       } catch (err) {
-        setError('An error occurred');
+        setError(content.errorOccurred);
       } finally {
         setLoading(false);
       }
     }
 
     fetchArticles();
-  }, [router]);
+  }, [router, content]);
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Бұл мақаланы өшіруді қалайсыз ба?')) return;
+    if (!confirm(content.deleteConfirm)) return;
 
     try {
       const token = localStorage.getItem('adminToken');
@@ -79,16 +121,24 @@ export default function AdminDashboard() {
       if (response.ok) {
         setArticles(articles.filter(a => a.id !== id));
       } else {
-        alert('Failed to delete article');
+        alert(content.deleteFailed);
       }
     } catch (err) {
-      alert('An error occurred');
+      alert(content.errorOccurred);
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('adminToken');
-    router.push('/admin');
+  const handleLogout = async () => {
+    try {
+      // Call logout API to clear server-side cookie
+      await fetch('/api/admin/logout', { method: 'POST' });
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      // Always clear client-side storage and redirect
+      localStorage.removeItem('adminToken');
+      router.push('/admin');
+    }
   };
 
   return (
@@ -96,19 +146,19 @@ export default function AdminDashboard() {
       {/* Admin Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">Админ панель</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{content.adminPanel}</h1>
           <div className="flex gap-4">
             <Link
               href="/admin/articles/new"
               className="px-4 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition-colors"
             >
-              Жаңа мақала
+              {content.newArticle}
             </Link>
             <button
               onClick={handleLogout}
               className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              Шығу
+              {content.logout}
             </button>
           </div>
         </div>
@@ -118,7 +168,7 @@ export default function AdminDashboard() {
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold">Мақалалар</h2>
+            <h2 className="text-lg font-semibold">{content.articles}</h2>
           </div>
 
           {loading ? (
@@ -129,7 +179,7 @@ export default function AdminDashboard() {
             <div className="px-6 py-12 text-center text-red-600">{error}</div>
           ) : articles.length === 0 ? (
             <div className="px-6 py-12 text-center text-gray-500">
-              Әзірше мақалалар жоқ
+              {content.noArticles}
             </div>
           ) : (
             <div className="divide-y divide-gray-200">
@@ -146,7 +196,7 @@ export default function AdminDashboard() {
                           ? 'bg-green-100 text-green-900'
                           : 'bg-gray-100 text-gray-900'
                       }`}>
-                        {article.published ? 'Жарияланған' : 'Жарияланбаған'}
+                        {article.published ? content.published : content.unpublished}
                       </span>
                     </div>
                     <p className="text-sm text-gray-500 mt-1">
@@ -158,13 +208,13 @@ export default function AdminDashboard() {
                       href={`/admin/articles/${article.id}/edit`}
                       className="px-3 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-50"
                     >
-                      Өңдеу
+                      {content.edit}
                     </Link>
                     <button
                       onClick={() => handleDelete(article.id)}
                       className="px-3 py-1.5 text-sm text-red-600 border border-red-300 rounded hover:bg-red-50"
                     >
-                      Өшіру
+                      {content.delete}
                     </button>
                   </div>
                 </div>
