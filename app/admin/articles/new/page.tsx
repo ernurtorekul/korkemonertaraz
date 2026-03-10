@@ -164,11 +164,6 @@ export default function NewArticlePage() {
   };
 
   const handleSave = async () => {
-    if (!title || !category || blocks.length === 0) {
-      alert(content.validationError);
-      return;
-    }
-
     setSaving(true);
     try {
       // Format article date (if provided) to ISO string
