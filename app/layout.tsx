@@ -6,6 +6,9 @@ import Footer from "@/components/layout/Footer";
 export const metadata: Metadata = {
   title: "Көркемөнер мектебі - Тараз",
   description: "Жамбыл облысы әкімдігінің, білім басқармасы Тараз қаласының, білім бөлімінің, балалар көркемөнер мектебі",
+  icons: {
+    icon: "/icon.png",
+  },
 };
 
 export default function RootLayout({
