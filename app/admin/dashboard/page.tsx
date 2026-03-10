@@ -70,22 +70,11 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('adminToken');
-    if (!token) {
-      router.push('/admin');
-      return;
-    }
-
     async function fetchArticles() {
       try {
-        const response = await fetch('/api/admin/articles', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch('/api/admin/articles');
 
         if (response.status === 401) {
-          localStorage.removeItem('adminToken');
           router.push('/admin');
           return;
         }
@@ -110,12 +99,8 @@ export default function AdminDashboard() {
     if (!confirm(content.deleteConfirm)) return;
 
     try {
-      const token = localStorage.getItem('adminToken');
       const response = await fetch(`/api/admin/articles/${id}`, {
         method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       });
 
       if (response.ok) {
@@ -135,8 +120,6 @@ export default function AdminDashboard() {
     } catch (err) {
       console.error('Logout error:', err);
     } finally {
-      // Always clear client-side storage and redirect
-      localStorage.removeItem('adminToken');
       router.push('/admin');
     }
   };

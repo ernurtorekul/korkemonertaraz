@@ -181,30 +181,31 @@ export default function Navbar() {
   );
 
   return (
-    <nav className={`bg-white sticky top-0 z-50 transition-all duration-300 ${
-      scrolled ? 'shadow-md' : 'shadow-sm'
-    }`}>
-      <div className="border-b border-vibrantGold">
-        <div className="section-container">
-          <div className="flex justify-between items-center h-20">
-            {/* Logo */}
-            <Link href="/" className="flex items-center space-x-3">
-              <div className="relative w-12 h-12">
-                <Image
-                  src="/logo.jpeg"
-                  alt={logoAlt}
-                  fill
-                  className="object-contain rounded-full"
-                />
-              </div>
-              <div className="hidden sm:block">
-                <span className="font-bold text-lg text-trustBlue leading-tight">{schoolName}</span>
-                <span className="block text-xs text-gray-500">{cityName}</span>
-              </div>
-            </Link>
+    <>
+      <nav className={`bg-white sticky top-0 z-50 transition-all duration-300 ${
+        scrolled ? 'shadow-md' : 'shadow-sm'
+      }`}>
+        <div className="border-b border-vibrantGold">
+          <div className="section-container">
+            <div className="flex justify-between items-center h-20">
+              {/* Logo */}
+              <Link href="/" className="flex items-center space-x-3">
+                <div className="relative w-12 h-12">
+                  <Image
+                    src="/logo.jpeg"
+                    alt={logoAlt}
+                    fill
+                    className="object-contain rounded-full"
+                  />
+                </div>
+                <div className="hidden sm:block">
+                  <span className="font-bold text-lg text-trustBlue leading-tight">{schoolName}</span>
+                  <span className="block text-xs text-gray-500">{cityName}</span>
+                </div>
+              </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-1">
+              {/* Desktop Navigation */}
+              <div className="hidden md:flex items-center space-x-1">
               {Object.entries(navigation).map(([name, href]) => {
                 const isAbout = name === aboutLabel;
                 const isStudents = name === studentsLabel;
@@ -290,35 +291,120 @@ export default function Navbar() {
             </button>
           </div>
         </div>
+      </div>
+    </nav>
 
-        {/* Mobile Navigation */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-100 bg-white">
-            <div className="section-container py-4 space-y-2">
-              <div className="flex justify-center mb-4">
-                <LanguageSwitcher />
-              </div>
-              {Object.entries(navigation).map(([name, href]) => (
-                <Link
+    {/* Mobile Navigation - separate from navbar */}
+    {mobileMenuOpen && (
+      <>
+        {/* Backdrop */}
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+
+        {/* Slide-in menu from right */}
+        <div className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl z-50 md:hidden overflow-y-auto flex flex-col">
+          {/* Close button */}
+          <div className="px-4 py-4 border-b border-gray-100 flex justify-between items-center flex-shrink-0">
+            <span className="font-bold text-lg text-trustBlue">{schoolName}</span>
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-2 rounded-lg hover:bg-skyTint transition-colors"
+            >
+              <svg className="h-6 w-6 text-trustBlue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <div className="px-4 py-4 space-y-1 flex-1 overflow-y-auto">
+            <div className="mb-4">
+              <LanguageSwitcher />
+            </div>
+
+            {Object.entries(navigation).map(([name, href]) => {
+              const isAbout = name === aboutLabel;
+              const isStudents = name === studentsLabel;
+              const isOpenMenu = name === openLabel;
+
+              // Determine which submenu state to use
+              let isSubmenuOpen = false;
+              let submenuItems: typeof aboutSubmenu = [];
+
+              if (isAbout) {
+                isSubmenuOpen = aboutOpen;
+                submenuItems = aboutSubmenu;
+              } else if (isStudents) {
+                isSubmenuOpen = studentsOpen;
+                submenuItems = studentsSubmenu;
+              } else if (isOpenMenu) {
+                isSubmenuOpen = openOpen;
+                submenuItems = openSubmenu;
+              }
+
+              // Items with submenus - expandable
+              if (submenuItems.length > 0) {
+                return (
+                  <div key={name} className="rounded-lg overflow-hidden">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (isAbout) toggleMenu('about');
+                        else if (isStudents) toggleMenu('students');
+                        else if (isOpenMenu) toggleMenu('open');
+                      }}
+                      className="w-full px-4 py-3 text-base font-medium text-trustBlue hover:bg-skyTint transition-colors flex items-center justify-between cursor-pointer"
+                    >
+                      {name}
+                      <svg className={`w-4 h-4 transition-transform duration-200 flex-shrink-0 ${
+                        isSubmenuOpen ? 'rotate-180' : ''
+                      }`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    {isSubmenuOpen && (
+                      <div className="bg-gray-50">
+                        {submenuItems.map((item) => (
+                          <a
+                            key={item.name}
+                            href={item.href}
+                            className="block px-6 py-2.5 text-base text-trustBlue hover:bg-skyTint hover:text-vibrantGold transition-colors border-l-2 border-transparent hover:border-vibrantGold cursor-pointer"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            {item.name}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              // Regular links (no submenu)
+              return (
+                <a
                   key={name}
                   href={href}
-                  className="block px-4 py-3 rounded-lg text-base font-medium text-trustBlue hover:bg-skyTint transition-colors"
+                  className="block px-4 py-3 rounded-lg text-base font-medium text-trustBlue hover:bg-skyTint transition-colors cursor-pointer"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {name}
-                </Link>
-              ))}
-              <Link
-                href="/admin"
-                className="block px-4 py-3 rounded-lg text-base font-medium bg-skyTint text-trustBlue hover:bg-blue-50 transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {adminLabel}
-              </Link>
-            </div>
+                </a>
+              );
+            })}
+
+            <a
+              href="/admin"
+              className="block px-4 py-3 rounded-lg text-base font-medium bg-skyTint text-trustBlue hover:bg-blue-50 transition-colors cursor-pointer"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {adminLabel}
+            </a>
           </div>
-        )}
-      </div>
-    </nav>
+        </div>
+      </>
+    )}
+  </>
   );
 }

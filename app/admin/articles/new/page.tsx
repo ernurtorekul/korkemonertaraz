@@ -164,7 +164,6 @@ export default function NewArticlePage() {
 
     setSaving(true);
     try {
-      const token = localStorage.getItem('adminToken');
 
       let formattedEventDate = null;
       if (category === 'Іс-шаралар' && eventDate) {
@@ -176,7 +175,6 @@ export default function NewArticlePage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           title,
@@ -204,7 +202,6 @@ export default function NewArticlePage() {
     formData.append('file', file);
 
     try {
-      const token = localStorage.getItem('adminToken');
       const response = await fetch('/api/admin/upload', {
         method: 'POST',
         headers: {

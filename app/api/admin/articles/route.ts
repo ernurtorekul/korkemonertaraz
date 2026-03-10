@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAdminSession } from '@/lib/supabase/auth';
+import { verifyAdminAuth } from '@/lib/auth-helpers';
 import { getArticles, createArticle } from '@/lib/supabase/articles';
 
 function serializeArticle(article: any) {
@@ -14,9 +14,7 @@ function serializeArticle(article: any) {
 // GET /api/admin/articles - List all articles
 export async function GET(request: NextRequest) {
   try {
-    const token = request.headers.get('authorization')?.replace('Bearer ', '');
-
-    if (!token || !(await verifyAdminSession(token))) {
+    if (!(await verifyAdminAuth(request))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -32,9 +30,7 @@ export async function GET(request: NextRequest) {
 // POST /api/admin/articles - Create a new article
 export async function POST(request: NextRequest) {
   try {
-    const token = request.headers.get('authorization')?.replace('Bearer ', '');
-
-    if (!token || !(await verifyAdminSession(token))) {
+    if (!(await verifyAdminAuth(request))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

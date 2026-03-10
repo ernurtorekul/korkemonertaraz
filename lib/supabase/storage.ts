@@ -4,6 +4,32 @@ const STORAGE_BUCKET = 'article-files';
 const IMAGES_FOLDER = 'images';
 const FILES_FOLDER = 'files';
 
+// Allowed file extensions for security
+const ALLOWED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+const ALLOWED_DOCUMENT_EXTENSIONS = ['pdf', 'doc', 'docx', 'txt', 'ppt', 'pptx', 'xls', 'xlsx'];
+
+// Sanitize filename to prevent path traversal and other attacks
+function sanitizeFileName(fileName: string): string {
+  // Remove any directory paths
+  const name = fileName.replace(/^.*[\\\/]/, '');
+
+  // Remove any non-alphanumeric characters except dots, underscores, and hyphens
+  // Also remove any dots that aren't the extension separator
+  const parts = name.split('.');
+  const extension = parts.pop()?.toLowerCase() || '';
+  const baseName = parts.join('.')
+    .replace(/[^a-zA-Z0-9_-]/g, '_')
+    .substring(0, 50); // Limit length
+
+  return `${baseName}.${extension}`;
+}
+
+// Validate file extension
+function validateFileExtension(fileName: string, allowedExtensions: string[]): boolean {
+  const extension = fileName.split('.').pop()?.toLowerCase();
+  return extension ? allowedExtensions.includes(extension) : false;
+}
+
 // Upload a file to Supabase Storage
 export async function uploadFile(
   file: File | Buffer,
@@ -68,9 +94,18 @@ export async function uploadFile(
 
 // Upload an image
 export async function uploadImage(file: File | Buffer, articleId: string, fileName?: string): Promise<string> {
-  const extension = fileName?.split('.').pop()?.toLowerCase() || 'jpg';
+  // Sanitize filename
+  const sanitizedName = fileName ? sanitizeFileName(fileName) : 'image.jpg';
+
+  // Validate extension
+  if (!validateFileExtension(sanitizedName, ALLOWED_IMAGE_EXTENSIONS)) {
+    throw new Error(`Invalid image file type. Allowed types: ${ALLOWED_IMAGE_EXTENSIONS.join(', ')}`);
+  }
+
+  const extension = sanitizedName.split('.').pop()?.toLowerCase() || 'jpg';
   const timestamp = Date.now();
-  const path = `${IMAGES_FOLDER}/${articleId}/${timestamp}.${extension}`;
+  const safeFileName = `${timestamp}_${sanitizedName}`;
+  const path = `${IMAGES_FOLDER}/${articleId}/${safeFileName}`;
 
   // Get content type from file object or derive from extension
   let contentType: string;
@@ -80,16 +115,25 @@ export async function uploadImage(file: File | Buffer, articleId: string, fileNa
     contentType = (file as File).type || `image/${extension}`;
   }
 
-  console.log('uploadImage:', { path, contentType, fileName, extension });
+  console.log('uploadImage:', { path, contentType, fileName: sanitizedName, extension });
 
   return uploadFile(file, path, contentType);
 }
 
 // Upload a file (PDF, doc, etc.)
 export async function uploadDocument(file: File | Buffer, articleId: string, fileName?: string): Promise<string> {
-  const extension = fileName?.split('.').pop()?.toLowerCase() || 'pdf';
+  // Sanitize filename
+  const sanitizedName = fileName ? sanitizeFileName(fileName) : 'document.pdf';
+
+  // Validate extension
+  if (!validateFileExtension(sanitizedName, ALLOWED_DOCUMENT_EXTENSIONS)) {
+    throw new Error(`Invalid document file type. Allowed types: ${ALLOWED_DOCUMENT_EXTENSIONS.join(', ')}`);
+  }
+
+  const extension = sanitizedName.split('.').pop()?.toLowerCase() || 'pdf';
   const timestamp = Date.now();
-  const path = `${FILES_FOLDER}/${articleId}/${timestamp}.${extension}`;
+  const safeFileName = `${timestamp}_${sanitizedName}`;
+  const path = `${FILES_FOLDER}/${articleId}/${safeFileName}`;
 
   // Map common extensions to content types
   const contentTypes: Record<string, string> = {
@@ -111,7 +155,7 @@ export async function uploadDocument(file: File | Buffer, articleId: string, fil
     contentType = (file as File).type || contentTypes[extension] || 'application/octet-stream';
   }
 
-  console.log('uploadDocument:', { path, contentType, fileName, extension });
+  console.log('uploadDocument:', { path, contentType, fileName: sanitizedName, extension });
 
   return uploadFile(file, path, contentType);
 }

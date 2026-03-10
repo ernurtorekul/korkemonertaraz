@@ -62,8 +62,6 @@ export default function AdminLoginPage() {
       });
 
       if (response.ok) {
-        const { token } = await response.json();
-        localStorage.setItem('adminToken', token);
         router.push(redirectTo);
       } else {
         const { error } = await response.json();

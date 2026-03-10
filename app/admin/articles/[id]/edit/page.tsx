@@ -130,7 +130,6 @@ export default function EditArticlePage() {
   useEffect(() => {
     async function fetchArticle() {
       try {
-        const token = localStorage.getItem('adminToken');
         const response = await fetch(`/api/admin/articles/${articleId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -221,7 +220,6 @@ export default function EditArticlePage() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           title,
@@ -252,9 +250,6 @@ export default function EditArticlePage() {
       const token = localStorage.getItem('adminToken');
       const response = await fetch('/api/admin/upload', {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         body: formData,
       });
 
