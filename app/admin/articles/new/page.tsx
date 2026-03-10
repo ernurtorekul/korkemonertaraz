@@ -57,6 +57,7 @@ export default function NewArticlePage() {
   const [published, setPublished] = useState(false);
   const [saving, setSaving] = useState(false);
   const [eventDate, setEventDate] = useState('');
+  const [articleDate, setArticleDate] = useState('');
 
   useEffect(() => {
     setMounted(true);
@@ -76,6 +77,9 @@ export default function NewArticlePage() {
     titlePlaceholder: 'Мақаланың тақырыбы',
     categoryLabel: 'Санат',
     categoryPlaceholder: 'Санатты таңдаңыз',
+    articleDateLabel: 'Мақала күні',
+    articleDateHint: 'Мақаланың жарияланған күні',
+    useTodayButton: 'Бүгін',
     eventDateLabel: 'Іс-шараның күні мен уақыты',
     eventDateHint: 'Іс-шара күні мен уақыты енгізіңіз (мысалы: 15.03.2026 14:30)',
     publishLabel: 'Жариялау',
@@ -100,6 +104,9 @@ export default function NewArticlePage() {
     titlePlaceholder: 'Заголовок статьи',
     categoryLabel: 'Категория',
     categoryPlaceholder: 'Выберите категорию',
+    articleDateLabel: 'Дата статьи',
+    articleDateHint: 'Дата публикации статьи',
+    useTodayButton: 'Сегодня',
     eventDateLabel: 'Дата и время мероприятия',
     eventDateHint: 'Введите дату и время мероприятия (например: 15.03.2026 14:30)',
     publishLabel: 'Опубликовать',
@@ -164,6 +171,12 @@ export default function NewArticlePage() {
 
     setSaving(true);
     try {
+      // Format article date (if provided) to ISO string
+      let formattedArticleDate = undefined;
+      if (articleDate) {
+        const date = new Date(articleDate);
+        formattedArticleDate = date.toISOString();
+      }
 
       let formattedEventDate = null;
       if (category === 'Іс-шаралар' && eventDate) {
@@ -181,6 +194,7 @@ export default function NewArticlePage() {
           category,
           blocks,
           published,
+          created_at: formattedArticleDate,
           event_date: formattedEventDate,
         }),
       });
@@ -204,9 +218,6 @@ export default function NewArticlePage() {
     try {
       const response = await fetch('/api/admin/upload', {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         body: formData,
       });
 
@@ -284,6 +295,37 @@ export default function NewArticlePage() {
                 ))}
               </select>
             </div>
+          </div>
+
+          {/* Article Date */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {content.articleDateLabel}
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="date"
+                value={articleDate}
+                onChange={(e) => setArticleDate(e.target.value)}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  const today = new Date();
+                  const year = today.getFullYear();
+                  const month = String(today.getMonth() + 1).padStart(2, '0');
+                  const day = String(today.getDate()).padStart(2, '0');
+                  setArticleDate(`${year}-${month}-${day}`);
+                }}
+                className="px-4 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition-colors whitespace-nowrap"
+              >
+                {content.useTodayButton}
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              {content.articleDateHint}
+            </p>
           </div>
 
           {/* Event Date - Only show for Events category */}

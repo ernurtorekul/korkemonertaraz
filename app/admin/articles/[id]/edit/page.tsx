@@ -61,6 +61,7 @@ export default function EditArticlePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [eventDate, setEventDate] = useState('');
+  const [articleDate, setArticleDate] = useState('');
 
   useEffect(() => {
     setMounted(true);
@@ -82,6 +83,9 @@ export default function EditArticlePage() {
     categoryPlaceholder: 'Санатты таңдаңыз',
     eventDateLabel: 'Іс-шараның күні мен уақыты',
     eventDateHint: 'Іс-шара күні мен уақытын енгізіңіз (мысалы: 15.03.2026 14:30)',
+    articleDateLabel: 'Мақала күні',
+    articleDateHint: 'Мақаланың жарияланған күні',
+    useTodayButton: 'Бүгін',
     publishLabel: 'Жарияланған',
     blockTypeTitle: 'Тақырып',
     blockTypeText: 'Мәтін',
@@ -108,6 +112,9 @@ export default function EditArticlePage() {
     categoryPlaceholder: 'Выберите категорию',
     eventDateLabel: 'Дата и время мероприятия',
     eventDateHint: 'Введите дату и время мероприятия (например: 15.03.2026 14:30)',
+    articleDateLabel: 'Дата статьи',
+    articleDateHint: 'Дата публикации статьи',
+    useTodayButton: 'Сегодня',
     publishLabel: 'Опубликовано',
     blockTypeTitle: 'Заголовок',
     blockTypeText: 'Текст',
@@ -130,11 +137,7 @@ export default function EditArticlePage() {
   useEffect(() => {
     async function fetchArticle() {
       try {
-        const response = await fetch(`/api/admin/articles/${articleId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(`/api/admin/articles/${articleId}`);
 
         if (response.ok) {
           const article = await response.json();
@@ -143,6 +146,15 @@ export default function EditArticlePage() {
           setBlocks(article.blocks);
           setPublished(article.published);
 
+          // Set article date
+          if (article.created_at) {
+            const date = new Date(article.created_at);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            setArticleDate(`${year}-${month}-${day}`);
+          }
+
           if (article.event_date) {
             const date = new Date(article.event_date);
             const year = date.getFullYear();
@@ -150,16 +162,16 @@ export default function EditArticlePage() {
             const day = String(date.getDate()).padStart(2, '0');
             const hours = String(date.getHours()).padStart(2, '0');
             const minutes = String(date.getMinutes()).padStart(2, '0');
-            setEventDate(`${year}-${month}-${day}T${hours}:${minutes}`);
+            setEffect(`${year}-${month}-${day}T${hours}:${minutes}`);
           } else {
             setEventDate('');
           }
         } else {
-          alert(content.fetchFailed);
+          alert(language === 'kk' ? 'Мақаланы алу мүмкін емес' : 'Не удалось получить статью');
           router.push('/admin/dashboard');
         }
       } catch (error) {
-        alert(content.fetchError);
+        alert(language === 'kk' ? 'Қате орын алды' : 'Произошла ошибка');
         router.push('/admin/dashboard');
       } finally {
         setLoading(false);
@@ -208,7 +220,12 @@ export default function EditArticlePage() {
 
     setSaving(true);
     try {
-      const token = localStorage.getItem('adminToken');
+      // Format article date (if provided) to ISO string
+      let formattedArticleDate = undefined;
+      if (articleDate) {
+        const date = new Date(articleDate);
+        formattedArticleDate = date.toISOString();
+      }
 
       let formattedEventDate = null;
       if (category === 'Іс-шаралар' && eventDate) {
@@ -226,6 +243,7 @@ export default function EditArticlePage() {
           category,
           blocks,
           published,
+          created_at: formattedArticleDate,
           event_date: formattedEventDate,
         }),
       });
@@ -247,7 +265,6 @@ export default function EditArticlePage() {
     formData.append('file', file);
 
     try {
-      const token = localStorage.getItem('adminToken');
       const response = await fetch('/api/admin/upload', {
         method: 'POST',
         body: formData,
@@ -335,6 +352,37 @@ export default function EditArticlePage() {
                 ))}
               </select>
             </div>
+          </div>
+
+          {/* Article Date */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {content.articleDateLabel}
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="date"
+                value={articleDate}
+                onChange={(e) => setArticleDate(e.target.value)}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  const today = new Date();
+                  const year = today.getFullYear();
+                  const month = String(today.getMonth() + 1).padStart(2, '0');
+                  const day = String(today.getDate()).padStart(2, '0');
+                  setArticleDate(`${year}-${month}-${day}`);
+                }}
+                className="px-4 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition-colors whitespace-nowrap"
+              >
+                {content.useTodayButton}
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              {content.articleDateHint}
+            </p>
           </div>
 
           {/* Event Date - Only show for Events category */}

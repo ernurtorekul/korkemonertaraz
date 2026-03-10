@@ -115,6 +115,8 @@ export default function AdminDashboard() {
 
   const handleLogout = async () => {
     try {
+      // Clear client-side token
+      localStorage.removeItem('adminToken');
       // Call logout API to clear server-side cookie
       await fetch('/api/admin/logout', { method: 'POST' });
     } catch (err) {

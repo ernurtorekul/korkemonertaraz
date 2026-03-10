@@ -23,6 +23,7 @@ export interface CreateArticleInput {
   title: string;
   published?: boolean;
   event_date?: string | null;
+  created_at?: string | null;
   blocks: Omit<Block, 'id' | 'article_id'>[];
 }
 
@@ -32,5 +33,6 @@ export interface UpdateArticleInput {
   title?: string;
   published?: boolean;
   event_date?: string | null;
+  created_at?: string | null;
   blocks?: Omit<Block, 'id' | 'article_id'>[];
 }
