@@ -97,7 +97,8 @@ export default function Navbar() {
   const studentsLabel = language === 'kk' ? 'Оқушыларға' : 'Ученикам';
   const openLabel = language === 'kk' ? 'Ашық орган' : 'Открытые органы';
   const adminLabel = language === 'kk' ? 'Администратор' : 'Администратор';
-  const schoolName = language === 'kk' ? 'Көркемөнер мектебі' : 'Художественная школа';
+  // const schoolName = language === 'kk' ? 'Көркемөнер мектебі' : 'Художественная школа';
+  const schoolName = language === 'kk' ? 'Жамбыл облысы әкімдігінің, білім басқармасы Тараз қаласының, білім бөлімінің, балалар көркемөнер мектебі КММ' : 'КГУ детская художественная школа отдела образования города Тараз  управления образования акимата Жамбылской области';
   const cityName = language === 'kk' ? 'Тараз қаласы' : 'г. Тараз';
   const logoAlt = language === 'kk' ? 'Көркемөнер мектебі логотипі' : 'Логотип художественной школы';
 
@@ -153,7 +154,7 @@ export default function Navbar() {
 
   const DropdownMenu = ({ items, isOpen, onClose }: { items: typeof aboutSubmenu; isOpen: boolean; onClose: () => void }) => (
     <div
-      className={`absolute left-0 mt-3 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 transition-all duration-200 ${
+      className={`absolute left-0 mt-3 w-72 bg-white rounded-xl shadow-xl border border-gray-100 py-2 transition-all duration-200 ${
         isOpen
           ? 'opacity-100 translate-y-0 visible'
           : 'opacity-0 -translate-y-2 invisible'
@@ -204,10 +205,10 @@ export default function Navbar() {
       }`}>
         <div className="border-b border-vibrantGold">
           <div className="section-container">
-            <div className="flex justify-between items-center h-20">
+            <div className="flex justify-between items-center min-h-20 py-3">
               {/* Logo */}
               <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
-                <div className="relative w-10 h-10 sm:w-12 sm:h-12">
+                <div className="relative w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0">
                   <Image
                     src="/logo.jpeg"
                     alt={logoAlt}
@@ -215,14 +216,14 @@ export default function Navbar() {
                     className="object-contain rounded-full"
                   />
                 </div>
-                <div>
-                  <span className="font-bold text-sm sm:text-lg text-trustBlue leading-tight block">{schoolName}</span>
+                <div className="max-w-[200px] sm:max-w-[250px] md:max-w-[300px] lg:max-w-[360px]">
+                  <span className="font-bold text-xs sm:text-sm lg:text-base text-trustBlue leading-snug block break-words">{schoolName}</span>
                   <span className="text-xs text-gray-500 block">{cityName}</span>
                 </div>
               </Link>
 
               {/* Desktop Navigation */}
-              <div className="hidden md:flex items-center space-x-1">
+              <div className="hidden md:flex items-center space-x-1 h-full">
               {Object.entries(navigation).map(([name, href]) => {
                 const isAbout = name === aboutLabel;
                 const isStudents = name === studentsLabel;
@@ -235,7 +236,7 @@ export default function Navbar() {
                   name === openLabel ? openRef : null
                 }>
                   {href === '/' || href === '/events' ? (
-                    <Link href={href} className="px-4 py-2 rounded-lg text-sm font-medium text-trustBlue hover:bg-skyTint hover:text-vibrantGold transition-all duration-200">
+                    <Link href={href} className="px-4 py-2 rounded-lg text-sm font-medium text-trustBlue hover:bg-skyTint hover:text-vibrantGold transition-all duration-200 flex items-center">
                       {name}
                     </Link>
                   ) : (
@@ -323,8 +324,8 @@ export default function Navbar() {
         {/* Slide-in menu from right */}
         <div className="mobile-menu-container fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl z-50 md:hidden overflow-y-auto flex flex-col">
           {/* Close button */}
-          <div className="px-4 py-4 border-b border-gray-100 flex justify-between items-center flex-shrink-0">
-            <span className="font-bold text-lg text-trustBlue">{schoolName}</span>
+          <div className="px-4 py-4 border-b border-gray-100 flex justify-between items-start flex-shrink-0 gap-3">
+            <span className="font-bold text-sm text-trustBlue flex-1 break-words leading-snug pr-2">{schoolName}</span>
             <button
               onClick={() => setMobileMenuOpen(false)}
               className="p-2 rounded-lg hover:bg-skyTint transition-colors"

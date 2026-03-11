@@ -38,14 +38,14 @@ export default function StatsSection() {
     labels: {
       students: 'Ученики',
       teachers: 'Учителя',
-      experience: 'Более 30 лет опыта',
+      experience: 'Более 10 лет опыта',
       graduates: 'Выпускники',
     }
   };
 
   const stats = [
     {
-      number: '500+',
+      number: '50+',
       label: content.labels.students,
       icon: (
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -63,7 +63,7 @@ export default function StatsSection() {
       )
     },
     {
-      number: '30+',
+      number: '10+',
       label: content.labels.experience,
       icon: (
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -72,7 +72,7 @@ export default function StatsSection() {
       )
     },
     {
-      number: '1000+',
+      number: '400+',
       label: content.labels.graduates,
       icon: (
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

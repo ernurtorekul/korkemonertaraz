@@ -14,8 +14,9 @@ export default function HeroSection() {
   }, []);
 
   const content = language === 'kk' ? {
-    badge: '30 жылдан астам тәжірибе',
-    titleLine1: 'Балалар көркемөнер мектебі',
+    badge: '10 жылдан астам тәжірибе',
+    // titleLine1: 'Балалар көркемөнер мектебі',
+    titleLine1: 'Балалар көркемөнер мектебі Жамбыл облысы әкімдігінің, білім бөлімінің, балалар көркемөнер мектебі',
     titleLine2: 'Тараз қаласы',
     // description: 'Бұл Тараз қаласының білім беру мекемесі, онда балаларға бейнелеу өнеріне үйретеді, олардың шығармашылық қабілеттерін дамытып, кәсіби педагогтардың жетекшілігімен көркемдік мәдениеттің негіздерімен таныстырады.',
     description: 'Мектебіміздің негізгі мақсаты – балалардың эстетикалық талғамын қалыптастыру, бейнелеу өнерінің негіздерін ұлттық өнер арқылы меңгерту және олардың шығармашылық қабілеттерін арттыру.',
@@ -27,8 +28,8 @@ export default function HeroSection() {
     statsYears: 'Жыл тәжірибе',
     alt: 'Көркемөнер мектебі',
   } : {
-    badge: 'Более 30 лет опыта',
-    titleLine1: 'Детская художественная школа',
+    badge: 'Более 10 лет опыта',
+    titleLine1: 'Детская художественная школа отдела управления образования акимата Жамбылской области',
     titleLine2: 'г. Тараз',
     description: 'Основная цель нашей школы — формирование эстетического вкуса у детей, обучение основам изобразительного искусства через национальное искусство и развитие их творческих способностей.',
     contactButton: 'Свяжитесь с нами',
@@ -120,7 +121,7 @@ export default function HeroSection() {
           {/* Quick Stats - Compact Horizontal */}
           <div className="flex items-center space-x-6 md:space-x-10">
             <div className="text-center md:text-left">
-              <div className="text-2xl md:text-3xl font-bold text-white">500+</div>
+              <div className="text-2xl md:text-3xl font-bold text-white">50+</div>
               <div className="text-xs md:text-sm text-blue-200">{content.statsStudents}</div>
             </div>
             <div className="hidden md:block w-px h-8 bg-white/20"></div>
@@ -130,7 +131,7 @@ export default function HeroSection() {
             </div>
             <div className="hidden md:block w-px h-8 bg-white/20"></div>
             <div className="text-center md:text-left">
-              <div className="text-2xl md:text-3xl font-bold text-white">30+</div>
+              <div className="text-2xl md:text-3xl font-bold text-white">10+</div>
               <div className="text-xs md:text-sm text-blue-200">{content.statsYears}</div>
             </div>
           </div>
