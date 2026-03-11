@@ -50,6 +50,8 @@ const categoryToSlug: Record<string, string> = {
   'Мемлекеттік қызмет': 'public-services',
 };
 
+export const revalidate = 60; // Revalidate every 60 seconds
+
 export default async function NewsPage() {
   // Get all published articles sorted by created_at (newest first)
   const articles = await getArticles({ published: true });

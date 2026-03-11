@@ -79,6 +79,8 @@ async function getArticlesByCategory(categorySlug: string): Promise<{ articles: 
   return { articles, categoryName };
 }
 
+export const revalidate = 60; // Revalidate every 60 seconds
+
 export default async function CategoryPage({ params }: PageProps) {
   const { category } = await params;
   const { articles, categoryName } = await getArticlesByCategory(category);

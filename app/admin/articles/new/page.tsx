@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Block } from '@/types/article';
@@ -58,6 +58,7 @@ export default function NewArticlePage() {
   const [saving, setSaving] = useState(false);
   const [eventDate, setEventDate] = useState('');
   const [articleDate, setArticleDate] = useState('');
+  const [uploadingBlockIndex, setUploadingBlockIndex] = useState<number | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -126,42 +127,45 @@ export default function NewArticlePage() {
     validationError: 'Необходим заголовок, категория и хотя бы один блок',
   };
 
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <header className="bg-white shadow-sm border-b border-gray-200">
-          <div className="max-w-4xl mx-auto px-4 py-4">
-            <h1 className="text-2xl font-bold text-gray-900">Loading...</h1>
-          </div>
-        </header>
-      </div>
-    );
-  }
+  const addBlock = useCallback((type: Block['type']) => {
+    console.log('addBlock called with type:', type);
+    setBlocks(prevBlocks => {
+      const newBlock: NewBlock = { type, content: '' };
+      return [...prevBlocks, newBlock];
+    });
+  }, []);
 
-  const addBlock = (type: Block['type']) => {
-    const newBlock: NewBlock = { type, content: '' };
-    setBlocks([...blocks, newBlock]);
-  };
+  const removeBlock = useCallback((index: number) => {
+    console.log('removeBlock called with index:', index);
+    setBlocks(prevBlocks => {
+      console.log('Current blocks count:', prevBlocks.length);
+      const filtered = prevBlocks.filter((_, i) => i !== index);
+      console.log('After filter count:', filtered.length);
+      return filtered;
+    });
+  }, []);
 
-  const removeBlock = (index: number) => {
-    setBlocks(blocks.filter((_, i) => i !== index));
-  };
+  const moveBlock = useCallback((index: number, direction: 'up' | 'down') => {
+    console.log('moveBlock called with index:', index, 'direction:', direction);
+    setBlocks(prevBlocks => {
+      const newBlocks = [...prevBlocks];
+      if (direction === 'up' && index > 0) {
+        [newBlocks[index - 1], newBlocks[index]] = [newBlocks[index], newBlocks[index - 1]];
+      } else if (direction === 'down' && index < newBlocks.length - 1) {
+        [newBlocks[index], newBlocks[index + 1]] = [newBlocks[index + 1], newBlocks[index]];
+      }
+      return newBlocks;
+    });
+  }, []);
 
-  const moveBlock = (index: number, direction: 'up' | 'down') => {
-    const newBlocks = [...blocks];
-    if (direction === 'up' && index > 0) {
-      [newBlocks[index - 1], newBlocks[index]] = [newBlocks[index], newBlocks[index - 1]];
-    } else if (direction === 'down' && index < blocks.length - 1) {
-      [newBlocks[index], newBlocks[index + 1]] = [newBlocks[index + 1], newBlocks[index]];
-    }
-    setBlocks(newBlocks);
-  };
-
-  const updateBlock = (index: number, content: string) => {
-    const newBlocks = [...blocks];
-    newBlocks[index].content = content;
-    setBlocks(newBlocks);
-  };
+  const updateBlock = useCallback((index: number, content: string) => {
+    console.log('updateBlock called with index:', index, 'content length:', content.length);
+    setBlocks(prevBlocks => {
+      const newBlocks = [...prevBlocks];
+      newBlocks[index].content = content;
+      return newBlocks;
+    });
+  }, []);
 
   const handleSave = async () => {
     setSaving(true);
@@ -207,6 +211,7 @@ export default function NewArticlePage() {
   };
 
   const handleFileUpload = async (index: number, file: File) => {
+    setUploadingBlockIndex(index);
     const formData = new FormData();
     formData.append('file', file);
 
@@ -228,8 +233,22 @@ export default function NewArticlePage() {
     } catch (error) {
       alert(`Upload error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       console.error('Upload error:', error);
+    } finally {
+      setUploadingBlockIndex(null);
     }
   };
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <header className="bg-white shadow-sm border-b border-gray-200">
+          <div className="max-w-4xl mx-auto px-4 py-4">
+            <h1 className="text-2xl font-bold text-gray-900">Loading...</h1>
+          </div>
+        </header>
+      </div>
+    );
+  }
 
   const getBlockTypeLabel = (type: Block['type']) => {
     switch (type) {
@@ -414,6 +433,11 @@ export default function NewArticlePage() {
                         {content.change}
                       </button>
                     </div>
+                  ) : uploadingBlockIndex === index ? (
+                    <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-900"></div>
+                      <span className="text-sm text-gray-600">Жүктелуде...</span>
+                    </div>
                   ) : (
                     <input
                       type="file"
@@ -423,6 +447,7 @@ export default function NewArticlePage() {
                         if (file) handleFileUpload(index, file);
                       }}
                       className="w-full"
+                      disabled={uploadingBlockIndex !== null}
                     />
                   )}
                 </div>
@@ -442,6 +467,11 @@ export default function NewArticlePage() {
                         {content.change}
                       </button>
                     </div>
+                  ) : uploadingBlockIndex === index ? (
+                    <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-900"></div>
+                      <span className="text-sm text-gray-600">Жүктелуде...</span>
+                    </div>
                   ) : (
                     <input
                       type="file"
@@ -451,6 +481,7 @@ export default function NewArticlePage() {
                         if (file) handleFileUpload(index, file);
                       }}
                       className="w-full"
+                      disabled={uploadingBlockIndex !== null}
                     />
                   )}
                 </div>

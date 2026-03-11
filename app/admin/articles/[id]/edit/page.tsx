@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Block } from '@/types/article';
@@ -62,6 +62,7 @@ export default function EditArticlePage() {
   const [saving, setSaving] = useState(false);
   const [eventDate, setEventDate] = useState('');
   const [articleDate, setArticleDate] = useState('');
+  const [uploadingBlockIndex, setUploadingBlockIndex] = useState<number | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -181,36 +182,51 @@ export default function EditArticlePage() {
     fetchArticle();
   }, [articleId, router]);
 
-  const addBlock = (type: Block['type']) => {
-    const newBlock: EditBlock = {
-      id: `block_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      article_id: articleId,
-      type,
-      content: '',
-      order_num: blocks.length,
-    };
-    setBlocks([...blocks, newBlock]);
-  };
+  const addBlock = useCallback((type: Block['type']) => {
+    console.log('addBlock called with type:', type);
+    setBlocks(prevBlocks => {
+      const newBlock: EditBlock = {
+        id: `block_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        article_id: articleId,
+        type,
+        content: '',
+        order_num: prevBlocks.length,
+      };
+      return [...prevBlocks, newBlock];
+    });
+  }, [articleId]);
 
-  const removeBlock = (index: number) => {
-    setBlocks(blocks.filter((_, i) => i !== index));
-  };
+  const removeBlock = useCallback((index: number) => {
+    console.log('removeBlock called with index:', index);
+    setBlocks(prevBlocks => {
+      console.log('Current blocks count:', prevBlocks.length);
+      const filtered = prevBlocks.filter((_, i) => i !== index);
+      console.log('After filter count:', filtered.length);
+      return filtered;
+    });
+  }, []);
 
-  const moveBlock = (index: number, direction: 'up' | 'down') => {
-    const newBlocks = [...blocks];
-    if (direction === 'up' && index > 0) {
-      [newBlocks[index - 1], newBlocks[index]] = [newBlocks[index], newBlocks[index - 1]];
-    } else if (direction === 'down' && index < blocks.length - 1) {
-      [newBlocks[index], newBlocks[index + 1]] = [newBlocks[index + 1], newBlocks[index]];
-    }
-    setBlocks(newBlocks);
-  };
+  const moveBlock = useCallback((index: number, direction: 'up' | 'down') => {
+    console.log('moveBlock called with index:', index, 'direction:', direction);
+    setBlocks(prevBlocks => {
+      const newBlocks = [...prevBlocks];
+      if (direction === 'up' && index > 0) {
+        [newBlocks[index - 1], newBlocks[index]] = [newBlocks[index], newBlocks[index - 1]];
+      } else if (direction === 'down' && index < newBlocks.length - 1) {
+        [newBlocks[index], newBlocks[index + 1]] = [newBlocks[index + 1], newBlocks[index]];
+      }
+      return newBlocks;
+    });
+  }, []);
 
-  const updateBlock = (index: number, content: string) => {
-    const newBlocks = [...blocks];
-    newBlocks[index].content = content;
-    setBlocks(newBlocks);
-  };
+  const updateBlock = useCallback((index: number, content: string) => {
+    console.log('updateBlock called with index:', index, 'content length:', content.length);
+    setBlocks(prevBlocks => {
+      const newBlocks = [...prevBlocks];
+      newBlocks[index].content = content;
+      return newBlocks;
+    });
+  }, []);
 
   const handleSave = async () => {
     setSaving(true);
@@ -256,6 +272,7 @@ export default function EditArticlePage() {
   };
 
   const handleFileUpload = async (index: number, file: File) => {
+    setUploadingBlockIndex(index);
     const formData = new FormData();
     formData.append('file', file);
 
@@ -277,6 +294,8 @@ export default function EditArticlePage() {
     } catch (error) {
       alert(`Upload error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       console.error('Upload error:', error);
+    } finally {
+      setUploadingBlockIndex(null);
     }
   };
 
@@ -471,6 +490,11 @@ export default function EditArticlePage() {
                         {content.change}
                       </button>
                     </div>
+                  ) : uploadingBlockIndex === index ? (
+                    <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-900"></div>
+                      <span className="text-sm text-gray-600">Жүктелуде...</span>
+                    </div>
                   ) : (
                     <input
                       type="file"
@@ -480,6 +504,7 @@ export default function EditArticlePage() {
                         if (file) handleFileUpload(index, file);
                       }}
                       className="w-full"
+                      disabled={uploadingBlockIndex !== null}
                     />
                   )}
                 </div>
@@ -499,6 +524,11 @@ export default function EditArticlePage() {
                         {content.change}
                       </button>
                     </div>
+                  ) : uploadingBlockIndex === index ? (
+                    <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-900"></div>
+                      <span className="text-sm text-gray-600">Жүктелуде...</span>
+                    </div>
                   ) : (
                     <input
                       type="file"
@@ -508,6 +538,7 @@ export default function EditArticlePage() {
                         if (file) handleFileUpload(index, file);
                       }}
                       className="w-full"
+                      disabled={uploadingBlockIndex !== null}
                     />
                   )}
                 </div>

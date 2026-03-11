@@ -4,6 +4,8 @@ import FAQSection from "@/components/home/FAQSection";
 import NewsPreview from "@/components/home/NewsPreview";
 import UpcomingEvents from "@/components/home/UpcomingEvents";
 
+export const revalidate = 60; // Revalidate every 60 seconds
+
 export default function HomePage() {
   return (
     <div>

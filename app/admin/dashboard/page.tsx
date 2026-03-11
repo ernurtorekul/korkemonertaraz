@@ -12,6 +12,9 @@ export default function AdminDashboard() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [articleToDelete, setArticleToDelete] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const content = useMemo(() => language === 'kk' ? {
     adminPanel: 'Админ панель',
@@ -24,6 +27,10 @@ export default function AdminDashboard() {
     edit: 'Өңдеу',
     delete: 'Өшіру',
     deleteConfirm: 'Бұл мақаланы өшіруді қалайсыз ба?',
+    deleteModalTitle: 'Мақаланы өшіру',
+    deleteModalMessage: 'Бұл мақаланы өшіруді шынымен қалайсыз ба? Бұл әрекетті болдырмау мүмкін емес.',
+    cancel: 'Бас тарту',
+    confirm: 'Өшіру',
     fetchError: 'Мақаларды алу мүмкін емес',
     errorOccurred: 'Қате орын алды',
     deleteFailed: 'Мақаланы өшу мүмкін емес',
@@ -39,6 +46,10 @@ export default function AdminDashboard() {
     edit: 'Редактировать',
     delete: 'Удалить',
     deleteConfirm: 'Вы уверены, что хотите удалить эту статью?',
+    deleteModalTitle: 'Удаление статьи',
+    deleteModalMessage: 'Вы действительно хотите удалить эту статью? Это действие нельзя отменить.',
+    cancel: 'Отмена',
+    confirm: 'Удалить',
     fetchError: 'Не удалось получить статьи',
     errorOccurred: 'Произошла ошибка',
     deleteFailed: 'Не удалось удалить статью',
@@ -95,22 +106,40 @@ export default function AdminDashboard() {
     fetchArticles();
   }, [router, content]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(content.deleteConfirm)) return;
+  const handleDelete = (id: string) => {
+    setArticleToDelete(id);
+    setDeleteModalOpen(true);
+  };
 
+  const confirmDelete = async () => {
+    if (!articleToDelete) return;
+
+    setDeleting(true);
     try {
-      const response = await fetch(`/api/admin/articles/${id}`, {
+      const response = await fetch(`/api/admin/articles/${articleToDelete}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
-        setArticles(articles.filter(a => a.id !== id));
+        setArticles(prevArticles => prevArticles.filter(a => a.id !== articleToDelete));
+        setDeleteModalOpen(false);
+        setArticleToDelete(null);
       } else {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Delete error:', errorData);
         alert(content.deleteFailed);
       }
     } catch (err) {
+      console.error('Delete error:', err);
       alert(content.errorOccurred);
+    } finally {
+      setDeleting(false);
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteModalOpen(false);
+    setArticleToDelete(null);
   };
 
   const handleLogout = async () => {
@@ -208,6 +237,36 @@ export default function AdminDashboard() {
           )}
         </div>
       </main>
+
+      {/* Delete Confirmation Modal */}
+      {deleteModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              {content.deleteModalTitle}
+            </h3>
+            <p className="text-sm text-gray-600 mb-6">
+              {content.deleteModalMessage}
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={cancelDelete}
+                disabled={deleting}
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {content.cancel}
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={deleting}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {deleting ? content.loadingText : content.confirm}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

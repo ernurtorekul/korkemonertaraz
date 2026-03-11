@@ -9,6 +9,8 @@ interface PageProps {
   }>;
 }
 
+export const revalidate = 60; // Revalidate every 60 seconds
+
 export default async function ArticlePage({ params }: PageProps) {
   const { articleId } = await params;
   const article = await getArticle(articleId);
