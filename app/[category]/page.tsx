@@ -109,10 +109,9 @@ export default async function CategoryPage({ params }: PageProps) {
 
 export async function generateStaticParams() {
   // Return all category slugs for static generation
-  // Note: 'contact' is excluded as it has its own dedicated page at /contact
+  // Note: 'contact' and 'annotation' are excluded as they have their own dedicated pages
   return [
     { category: 'administration' },
-    { category: 'annotation' },
     { category: 'teaching-materials' },
     { category: 'educational-work' },
     { category: 'graduates' },

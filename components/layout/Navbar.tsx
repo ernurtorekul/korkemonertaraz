@@ -208,7 +208,7 @@ export default function Navbar() {
             <div className="flex justify-between items-center min-h-20 py-3">
               {/* Logo */}
               <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
-                <div className="relative w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0">
+                <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0">
                   <Image
                     src="/logo.jpeg"
                     alt={logoAlt}
@@ -236,7 +236,7 @@ export default function Navbar() {
                   name === openLabel ? openRef : null
                 }>
                   {href === '/' || href === '/events' ? (
-                    <Link href={href} className="px-4 py-2 rounded-lg text-sm font-medium text-trustBlue hover:bg-skyTint hover:text-vibrantGold transition-all duration-200 flex items-center">
+                    <Link href={href} className="px-4 py-2 rounded-lg text-base font-medium text-trustBlue hover:bg-skyTint hover:text-vibrantGold transition-all duration-200 flex items-center">
                       {name}
                     </Link>
                   ) : (
@@ -247,7 +247,7 @@ export default function Navbar() {
                           else if (isStudents) toggleMenu('students');
                           else if (name === openLabel) toggleMenu('open');
                         }}
-                        className="px-4 py-2 rounded-lg text-sm font-medium text-trustBlue hover:bg-skyTint hover:text-vibrantGold transition-all duration-200 flex items-center gap-1"
+                        className="px-4 py-2 rounded-lg text-base font-medium text-trustBlue hover:bg-skyTint hover:text-vibrantGold transition-all duration-200 flex items-center gap-1"
                       >
                         {name}
                         <svg className={`w-4 h-4 transition-transform duration-200 ${
@@ -292,7 +292,7 @@ export default function Navbar() {
               <LanguageSwitcher />
               <Link
                 href="/admin"
-                className="px-4 py-2 rounded-lg text-sm font-medium text-trustBlue hover:bg-skyTint hover:text-vibrantGold transition-all duration-200"
+                className="px-4 py-2 rounded-lg text-base font-medium text-trustBlue hover:bg-skyTint hover:text-vibrantGold transition-all duration-200"
               >
                 {adminLabel}
               </Link>
