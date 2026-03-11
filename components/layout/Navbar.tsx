@@ -8,6 +8,7 @@ import { useLanguageState } from '@/lib/languageState';
 import type { Language } from '@/lib/translations';
 
 const aboutSubmenuKk = [
+  { name: 'Біз туралы', href: '/about' },
   { name: 'Әкімшілік', href: '/administration' },
   { name: 'Аннотация', href: '/annotation' },
   { name: 'Оқу-әдістемелік жұмыстар', href: '/teaching-materials' },
@@ -31,6 +32,7 @@ const openSubmenuKk = [
 ];
 
 const aboutSubmenuRu = [
+  { name: 'Наша школа', href: '/about' },
   { name: 'Администрация', href: '/administration' },
   { name: 'Аннотация', href: '/annotation' },
   { name: 'Учебно-методическая работа', href: '/teaching-materials' },
@@ -74,7 +76,7 @@ export default function Navbar() {
 
   // Get navigation items based on language
   const navigation = language === 'kk' ? {
-    'Ақпарат': '/',
+    'Басты бет': '/',
     'Біз туралы': '#about',
     'Оқушыларға': '#students',
     'Іс-шаралар': '/events',

@@ -21,7 +21,7 @@ export default function HeroSection() {
     description: 'Мектебіміздің негізгі мақсаты – балалардың эстетикалық талғамын қалыптастыру, бейнелеу өнерінің негіздерін ұлттық өнер арқылы меңгерту және олардың шығармашылық қабілеттерін арттыру.',
     contactButton: 'Бізбен байланысыңыз',
     learnMoreButton: 'Толық ақпарат',
-    adminLink: '/administration',
+    aboutLink: '/about',
     statsStudents: 'Оқушылар',
     statsTeachers: 'Мұғалімдер',
     statsYears: 'Жыл тәжірибе',
@@ -33,7 +33,7 @@ export default function HeroSection() {
     description: 'Основная цель нашей школы — формирование эстетического вкуса у детей, обучение основам изобразительного искусства через национальное искусство и развитие их творческих способностей.',
     contactButton: 'Свяжитесь с нами',
     learnMoreButton: 'Узнать больше',
-    adminLink: '/administration',
+    aboutLink: '/about',
     statsStudents: 'Ученики',
     statsTeachers: 'Учителя',
     statsYears: 'Лет опыта',
@@ -110,7 +110,7 @@ export default function HeroSection() {
               </svg>
             </Link>
             <Link
-              href={content.adminLink}
+              href={content.aboutLink}
               className="inline-flex items-center justify-center space-x-2 bg-white/10 backdrop-blur-sm text-white font-semibold px-8 py-3 rounded-xl hover:bg-white/20 transition-all duration-200 border border-white/20"
             >
               <span>{content.learnMoreButton}</span>
