@@ -32,7 +32,7 @@ const openSubmenuKk = [
 ];
 
 const aboutSubmenuRu = [
-  { name: 'Наша школа', href: '/about' },
+  { name: 'О нас', href: '/about' },
   { name: 'Администрация', href: '/administration' },
   { name: 'Аннотация', href: '/annotation' },
   { name: 'Учебно-методическая работа', href: '/teaching-materials' },

@@ -71,61 +71,61 @@ export default function AboutPageContent() {
         <div className="section-container">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
             {/* Mission Card */}
-            <div className="group relative h-[400px] rounded-3xl overflow-hidden shadow-2xl">
+            <div className="group relative h-[400px] rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 ease-out hover:scale-105 hover:shadow-2xl hover:-translate-y-2">
               {/* Image Background */}
               <div className="absolute inset-0">
                 <Image
                   src="/yellow.jpg"
                   alt={content.mainPicAlt}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-600/50 via-yellow-600/40 to-yellow-700/50"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-600/50 via-yellow-600/40 to-yellow-700/50 transition-opacity duration-500 group-hover:from-amber-600/60 group-hover:via-yellow-600/50 group-hover:to-yellow-700/60"></div>
               </div>
 
               {/* Content */}
-              <div className="relative z-10 h-full flex flex-col justify-between p-8 md:p-10">
+              <div className="relative z-10 h-full flex flex-col justify-between p-8 md:p-10 transition-transform duration-500 group-hover:translate-y-1">
                 <div>
-                  <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-6">
-                    <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 group-hover:scale-110 group-hover:bg-white/30">
+                    <svg className="w-8 h-8 text-white transition-transform duration-300 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
                   </div>
-                  <h2 className="text-3xl md:text-4xl font-bold text-white mb-4" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.6), 0 0 40px rgba(0,0,0,0.4)' }}>{content.missionTitle}</h2>
-                  <div className="w-16 h-1 bg-white rounded-full mb-6"></div>
+                  <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 transition-transform duration-300 group-hover:scale-105" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.6), 0 0 40px rgba(0,0,0,0.4)' }}>{content.missionTitle}</h2>
+                  <div className="w-16 h-1 bg-white rounded-full mb-6 transition-all duration-300 group-hover:w-24"></div>
                 </div>
-                <p className="text-white text-lg leading-relaxed" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.6), 0 0 30px rgba(0,0,0,0.4)' }}>
+                <p className="text-white text-lg leading-relaxed transition-transform duration-300 group-hover:translate-x-1" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.6), 0 0 30px rgba(0,0,0,0.4)' }}>
                   {content.missionText}
                 </p>
               </div>
             </div>
 
             {/* Vision Card */}
-            <div className="group relative h-[400px] rounded-3xl overflow-hidden shadow-2xl">
+            <div className="group relative h-[400px] rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 ease-out hover:scale-105 hover:shadow-2xl hover:-translate-y-2">
               {/* Image Background */}
               <div className="absolute inset-0">
                 <Image
                   src="/blue.jpeg"
                   alt={content.mainPicAlt}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-br from-trustBlue/50 via-trustBlue/40 to-blue-800/50"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-trustBlue/50 via-trustBlue/40 to-blue-800/50 transition-opacity duration-500 group-hover:from-trustBlue/60 group-hover:via-trustBlue/50 group-hover:to-blue-800/60"></div>
               </div>
 
               {/* Content */}
-              <div className="relative z-10 h-full flex flex-col justify-between p-8 md:p-10">
+              <div className="relative z-10 h-full flex flex-col justify-between p-8 md:p-10 transition-transform duration-500 group-hover:translate-y-1">
                 <div>
-                  <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-6">
-                    <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 group-hover:scale-110 group-hover:bg-white/30">
+                    <svg className="w-8 h-8 text-white transition-transform duration-300 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                   </div>
-                  <h2 className="text-3xl md:text-4xl font-bold text-white mb-4" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.6), 0 0 40px rgba(0,0,0,0.4)' }}>{content.visionTitle}</h2>
-                  <div className="w-16 h-1 bg-white rounded-full mb-6"></div>
+                  <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 transition-transform duration-300 group-hover:scale-105" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.6), 0 0 40px rgba(0,0,0,0.4)' }}>{content.visionTitle}</h2>
+                  <div className="w-16 h-1 bg-white rounded-full mb-6 transition-all duration-300 group-hover:w-24"></div>
                 </div>
-                <p className="text-white text-lg leading-relaxed" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.6), 0 0 30px rgba(0,0,0,0.4)' }}>
+                <p className="text-white text-lg leading-relaxed transition-transform duration-300 group-hover:translate-x-1" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.6), 0 0 30px rgba(0,0,0,0.4)' }}>
                   {content.visionText}
                 </p>
               </div>
