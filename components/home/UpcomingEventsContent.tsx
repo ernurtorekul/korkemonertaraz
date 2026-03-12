@@ -40,6 +40,13 @@ export default function UpcomingEventsContent({ events }: UpcomingEventsContentP
     return categoryToSlug[category] || category.toLowerCase().replace(/\s+/g, '-');
   };
 
+  // Check if article has an external link block
+  const getExternalLink = (blocks: any[] | undefined): string | null => {
+    if (!blocks) return null;
+    const linkBlock = blocks.find(block => block.type === 'link');
+    return linkBlock?.content || null;
+  };
+
   // Format date for display (e.g., "15 Наурыз 2026, 14:00")
   const formatEventDate = (dateString: string | null | undefined): string => {
     if (!dateString) return '';
@@ -125,11 +132,18 @@ export default function UpcomingEventsContent({ events }: UpcomingEventsContentP
             const monthName = getMonthName(event.event_date);
             const categorySlug = getCategorySlug(event.category);
             const fullDate = formatEventDate(event.event_date);
+            const externalLink = getExternalLink(event.blocks);
+
+            // If article has external link, render as <a> tag, otherwise as Next.js Link
+            const CardWrapper = externalLink ? 'a' : Link;
+            const cardProps = externalLink
+              ? { href: externalLink, target: '_blank', rel: 'noopener noreferrer' }
+              : { href: `/${categorySlug}/${event.id}` };
 
             return (
-              <Link
+              <CardWrapper
                 key={event.id}
-                href={`/${categorySlug}/${event.id}`}
+                {...cardProps}
                 className="group"
               >
                 <div className="card p-6 hover:shadow-lg transition-all duration-300">
@@ -162,13 +176,13 @@ export default function UpcomingEventsContent({ events }: UpcomingEventsContentP
 
                   {/* Arrow indicator */}
                   <div className="flex items-center text-trustBlue group-hover:text-vibrantGold transition-colors text-sm font-medium">
-                    <span>{content.readMore}</span>
+                    <span>{externalLink ? (language === 'kk' ? 'Ашу' : 'Открыть') : content.readMore}</span>
                     <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
                   </div>
                 </div>
-              </Link>
+              </CardWrapper>
             );
           })}
         </div>

@@ -92,15 +92,18 @@ export default function EditArticlePage() {
     blockTypeText: 'Мәтін',
     blockTypeImage: 'Сурет',
     blockTypeFile: 'Файл',
+    blockTypeLink: 'Сілтеме',
     change: 'Өзгерту',
     addTitle: '+ Тақырып',
     addText: '+ Мәтін',
     addImage: '+ Сурет',
     addFile: '+ Файл',
+    addLink: '+ Сілтеме',
     saveButton: 'Сақтау',
     saveButtonLoading: 'Сақтау...',
     titlePlaceholder2: 'Тақырып мәтіні...',
     textPlaceholder: 'Мәтін енгізіңіз...',
+    linkPlaceholder: 'Сілтемені енгізіңіз (https://...)',
     validationError: 'Тақырып, санат және кемінде бір блок қажет',
     fetchFailed: 'Мақаланы алу мүмкін емес',
     fetchError: 'Қате орын алды',
@@ -121,15 +124,18 @@ export default function EditArticlePage() {
     blockTypeText: 'Текст',
     blockTypeImage: 'Изображение',
     blockTypeFile: 'Файл',
+    blockTypeLink: 'Ссылка',
     change: 'Изменить',
     addTitle: '+ Заголовок',
     addText: '+ Текст',
     addImage: '+ Изображение',
     addFile: '+ Файл',
+    addLink: '+ Ссылка',
     saveButton: 'Сохранить',
     saveButtonLoading: 'Сохранение...',
     titlePlaceholder2: 'Текст заголовка...',
     textPlaceholder: 'Введите текст...',
+    linkPlaceholder: 'Введите ссылку (https://...)',
     validationError: 'Необходим заголовок, категория и хотя бы один блок',
     fetchFailed: 'Не удалось получить статью',
     fetchError: 'Произошла ошибка',
@@ -305,6 +311,7 @@ export default function EditArticlePage() {
       case 'text': return content.blockTypeText;
       case 'image': return content.blockTypeImage;
       case 'file': return content.blockTypeFile;
+      case 'link': return content.blockTypeLink;
       default: return type;
     }
   };
@@ -543,6 +550,18 @@ export default function EditArticlePage() {
                   )}
                 </div>
               )}
+
+              {block.type === 'link' && (
+                <div>
+                  <input
+                    type="url"
+                    value={block.content}
+                    onChange={(e) => updateBlock(index, e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900"
+                    placeholder={content.linkPlaceholder}
+                  />
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -572,6 +591,12 @@ export default function EditArticlePage() {
             className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
           >
             {content.addFile}
+          </button>
+          <button
+            onClick={() => addBlock('link')}
+            className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+          >
+            {content.addLink}
           </button>
         </div>
 

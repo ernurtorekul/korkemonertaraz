@@ -97,6 +97,13 @@ export default function CategoryPageContent({ articles, categorySlug }: Category
     return imageBlock?.content || null;
   };
 
+  // Check if article has an external link block
+  const getExternalLink = (blocks: any[] | undefined): string | null => {
+    if (!blocks) return null;
+    const linkBlock = blocks.find(block => block.type === 'link');
+    return linkBlock?.content || null;
+  };
+
   // Check if this is the events category
   const isEventCategory = articles.length > 0 && articles[0].category === 'Іс-шаралар';
 
@@ -135,11 +142,18 @@ export default function CategoryPageContent({ articles, categorySlug }: Category
           {articles.map((article) => {
             const imageUrl = getFirstImageUrl(article.blocks);
             const eventInfo = isEventCategory ? getEventDayInfo(article.event_date) : null;
+            const externalLink = getExternalLink(article.blocks);
+
+            // If article has external link, render as <a> tag, otherwise as Next.js Link
+            const CardWrapper = externalLink ? 'a' : Link;
+            const cardProps = externalLink
+              ? { href: externalLink, target: '_blank', rel: 'noopener noreferrer' }
+              : { href: `/${categorySlug}/${article.id}` };
 
             return (
-              <Link
+              <CardWrapper
                 key={article.id}
-                href={`/${categorySlug}/${article.id}`}
+                {...cardProps}
                 className="card group overflow-hidden flex flex-col"
               >
                 {/* Card Image */}
@@ -207,13 +221,13 @@ export default function CategoryPageContent({ articles, categorySlug }: Category
 
                   {/* Read More */}
                   <div className="mt-4 flex items-center text-trustBlue font-semibold text-sm group-hover:text-vibrantGold transition-colors">
-                    <span>{content.readMore}</span>
+                    <span>{externalLink ? (language === 'kk' ? 'Ашу' : 'Открыть') : content.readMore}</span>
                     <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
                   </div>
                 </div>
-              </Link>
+              </CardWrapper>
             );
           })}
         </div>

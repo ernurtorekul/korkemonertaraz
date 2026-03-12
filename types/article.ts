@@ -1,4 +1,4 @@
-export type BlockType = 'title' | 'text' | 'image' | 'file';
+export type BlockType = 'title' | 'text' | 'image' | 'file' | 'link';
 
 export interface Block {
   id: string;

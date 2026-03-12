@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { TitleBlock, TextBlock, ImageBlock, FileBlock } from '@/components/blocks';
+import { TitleBlock, TextBlock, ImageBlock, FileBlock, LinkBlock } from '@/components/blocks';
 import { useLanguageState } from '@/lib/languageState';
 import { useEffect, useState } from 'react';
 import type { Article } from '@/types/article';
@@ -75,6 +75,8 @@ export default function AnnotationPageContent({ article }: AnnotationPageContent
                   return <ImageBlock key={block.id} block={block} />;
                 case 'file':
                   return <FileBlock key={block.id} block={block} />;
+                case 'link':
+                  return <LinkBlock key={block.id} block={block} />;
                 default:
                   return null;
               }
