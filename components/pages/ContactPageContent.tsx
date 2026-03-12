@@ -1,65 +1,70 @@
-'use client';
+"use client";
 
 import Link from "next/link";
 import Image from "next/image";
-import { useLanguageState } from '@/lib/languageState';
+import { useLanguageState } from "@/lib/languageState";
 
 export default function ContactPageContent() {
   const [language] = useLanguageState();
 
-  const content = language === 'kk' ? {
-    title: 'Байланыс',
-    subtitle: 'Бізбен хабарласыңыз',
-    schoolName: 'Көркемөнер мектебі',
-    cityName: 'Тараз қаласы',
-    logoAlt: 'Көркемөнер мектебі логотипі',
-    description: 'Жамбыл облысы әкімдігінің, білім басқармасы Тараз қаласының, білім бөлімінің, балалар көркемөнер мектебі',
-    quickContact: 'Жедел байланыс',
-    mobilePhone: 'Ұялы телефон',
-    homePhone: 'Үй телефоны',
-    email: 'Электрондық пошта',
-    address: 'Мекен-жай',
-    addressLabel: 'Адрес',
-    addressText: 'Тараз қаласы, Астана мөлтек ауданы №32',
-    postalCode: 'Пошта индексі: 080000',
-    socialMedia: 'Әлеуметтік желі',
-    sendMessage: 'Хабарлама жіберіңіз',
-    nameLabel: 'Аты-жөніңіз *',
-    namePlaceholder: 'Атыңызды енгізіңіз',
-    phoneLabel: 'Телефон нөміріңіз *',
-    emailLabel: 'Электрондық пошта',
-    messageLabel: 'Хабарлама *',
-    messagePlaceholder: 'Хабарламаңызды жазыңыз...',
-    submitButton: 'Жіберу',
-    requiredFields: '* міндетті өрістер',
-    backToHome: 'Басты бетке оралу',
-  } : {
-    title: 'Контакты',
-    subtitle: 'Свяжитесь с нами',
-    schoolName: 'Художественная школа',
-    cityName: 'г. Тараз',
-    logoAlt: 'Логотип художественной школы',
-    description: 'Детская художественная школа Управления образования г. Тараз, Жамбылской области',
-    quickContact: 'Быстрая связь',
-    mobilePhone: 'Мобильный телефон',
-    homePhone: 'Домашний телефон',
-    email: 'Электронная почта',
-    address: 'Адрес',
-    addressLabel: 'Адрес',
-    addressText: 'г. Тараз, мкр. Астана, д. №32',
-    postalCode: 'Почтовый индекс: 080000',
-    socialMedia: 'Социальные сети',
-    sendMessage: 'Отправить сообщение',
-    nameLabel: 'Ваше имя *',
-    namePlaceholder: 'Введите ваше имя',
-    phoneLabel: 'Номер телефона *',
-    emailLabel: 'Электронная почта',
-    messageLabel: 'Сообщение *',
-    messagePlaceholder: 'Напишите ваше сообщение...',
-    submitButton: 'Отправить',
-    requiredFields: '* обязательные поля',
-    backToHome: 'Вернуться на главную',
-  };
+  const content =
+    language === "kk"
+      ? {
+          title: "Байланыс",
+          subtitle: "Бізбен хабарласыңыз",
+          schoolName: "Көркемөнер мектебі",
+          cityName: "Тараз қаласы",
+          logoAlt: "Көркемөнер мектебі логотипі",
+          description:
+            "Жамбыл облысы әкімдігінің, білім басқармасы Тараз қаласының, білім бөлімінің, балалар көркемөнер мектебі",
+          quickContact: "Жедел байланыс",
+          mobilePhone: "Ұялы телефон",
+          homePhone: "Үй телефоны",
+          email: "Электрондық пошта",
+          address: "Мекен-жай",
+          addressLabel: "Адрес",
+          addressText: "Тараз қаласы, Астана мөлтек ауданы №32",
+          postalCode: "Пошта индексі: 080000",
+          socialMedia: "Әлеуметтік желі",
+          sendMessage: "Хабарлама жіберіңіз",
+          nameLabel: "Аты-жөніңіз *",
+          namePlaceholder: "Атыңызды енгізіңіз",
+          phoneLabel: "Телефон нөміріңіз *",
+          emailLabel: "Электрондық пошта",
+          messageLabel: "Хабарлама *",
+          messagePlaceholder: "Хабарламаңызды жазыңыз...",
+          submitButton: "Жіберу",
+          requiredFields: "* міндетті өрістер",
+          backToHome: "Басты бетке оралу",
+        }
+      : {
+          title: "Контакты",
+          subtitle: "Свяжитесь с нами",
+          schoolName: "Художественная школа",
+          cityName: "г. Тараз",
+          logoAlt: "Логотип художественной школы",
+          description:
+            "Детская художественная школа Управления образования г. Тараз, Жамбылской области",
+          quickContact: "Быстрая связь",
+          mobilePhone: "Мобильный телефон",
+          homePhone: "Домашний телефон",
+          email: "Электронная почта",
+          address: "Адрес",
+          addressLabel: "Адрес",
+          addressText: "г. Тараз, мкр. Астана, д. №32",
+          postalCode: "Почтовый индекс: 080000",
+          socialMedia: "Социальные сети",
+          sendMessage: "Отправить сообщение",
+          nameLabel: "Ваше имя *",
+          namePlaceholder: "Введите ваше имя",
+          phoneLabel: "Номер телефона *",
+          emailLabel: "Электронная почта",
+          messageLabel: "Сообщение *",
+          messagePlaceholder: "Напишите ваше сообщение...",
+          submitButton: "Отправить",
+          requiredFields: "* обязательные поля",
+          backToHome: "Вернуться на главную",
+        };
 
   return (
     <div className="min-h-screen bg-skyTint py-12">
@@ -226,7 +231,7 @@ export default function ContactPageContent() {
 
               {/* Email */}
               <a
-                href="mailto:ernurtorekul@gmail.com"
+                href="mailto:korkemoner13.12.2013@mail.ru"
                 className="flex items-center space-x-4 p-4 bg-skyTint rounded-xl hover:bg-blue-50 transition-colors group"
               >
                 <div className="w-12 h-12 bg-trustBlue rounded-full flex items-center justify-center flex-shrink-0">
@@ -296,7 +301,9 @@ export default function ContactPageContent() {
                   </svg>
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900">{content.addressLabel}</div>
+                  <div className="font-semibold text-gray-900">
+                    {content.addressLabel}
+                  </div>
                   <div className="text-sm text-gray-600 mt-1">
                     {content.addressText}
                   </div>
@@ -369,7 +376,7 @@ export default function ContactPageContent() {
               {content.sendMessage}
             </h3>
             <form
-              action="https://formspree.io/f/mvzwzklw"
+              action="https://formspree.io/f/mdawgrlp"
               method="POST"
               className="space-y-6"
             >
