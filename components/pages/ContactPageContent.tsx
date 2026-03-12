@@ -112,7 +112,7 @@ export default function ContactPageContent() {
 
               {/* WhatsApp */}
               <a
-                href="https://wa.me/77079772103"
+                href="https://wa.me/77472989698"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center space-x-4 p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-colors group mb-4"
@@ -130,7 +130,7 @@ export default function ContactPageContent() {
                   <div className="font-semibold text-gray-900 group-hover:text-green-700 transition-colors">
                     WhatsApp
                   </div>
-                  <div className="text-sm text-gray-600">+7 707 977 21 03</div>
+                  <div className="text-sm text-gray-600">+7 747 298 96 98</div>
                 </div>
                 <svg
                   className="w-5 h-5 text-gray-400 group-hover:text-green-700 transition-colors"
@@ -149,7 +149,7 @@ export default function ContactPageContent() {
 
               {/* Mobile Phone */}
               <a
-                href="tel:+77079772103"
+                href="tel:+77472989698"
                 className="flex items-center space-x-4 p-4 bg-skyTint rounded-xl hover:bg-blue-50 transition-colors group mb-4"
               >
                 <div className="w-12 h-12 bg-trustBlue rounded-full flex items-center justify-center flex-shrink-0">
@@ -171,7 +171,7 @@ export default function ContactPageContent() {
                   <div className="font-semibold text-gray-900 group-hover:text-trustBlue transition-colors">
                     {content.mobilePhone}
                   </div>
-                  <div className="text-sm text-gray-600">+7 707 977 21 03</div>
+                  <div className="text-sm text-gray-600">+7 747 298 96 98</div>
                 </div>
                 <svg
                   className="w-5 h-5 text-gray-400 group-hover:text-trustBlue transition-colors"
